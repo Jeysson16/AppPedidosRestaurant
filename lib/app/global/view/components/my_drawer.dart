@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:restaurant_app/app/global/view/components/my_drawer_tile.dart';
-import 'package:restaurant_app/unidades/autenticacion/presentacion/paginas/configuracion_pagina.dart';
-import 'package:restaurant_app/unidades/pedidos/presentacion/pages/inicio_pagina.dart';
+import 'package:restaurant_app/features/autenticacion/presentacion/paginas/configuracion_pagina.dart';
+import 'package:restaurant_app/features/pedidos/presentacion/pages/inicio_pagina.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({super.key});

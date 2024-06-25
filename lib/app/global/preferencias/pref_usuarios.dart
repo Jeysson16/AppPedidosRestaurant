@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:restaurant_app/unidades/autenticacion/dominio/entidades/empleado.dart';
+import 'package:restaurant_app/features/autenticacion/dominio/entidades/empleado.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PreferenciasUsuario {
