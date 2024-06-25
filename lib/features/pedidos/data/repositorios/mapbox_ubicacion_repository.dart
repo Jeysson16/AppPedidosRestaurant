@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
-import 'package:restaurant_app/features/autenticacion/dominio/entidades/sucursal.dart';
+import 'package:restaurant_app/features/mesa/dominio/entidades/sucursal.dart';
 import 'package:restaurant_app/features/pedidos/data/model/calle_sugerencias.dart';
 import 'package:restaurant_app/features/pedidos/data/model/feature_ubicacion_modelo.dart';
 import 'package:restaurant_app/features/pedidos/dominio/repositorios/ubicacion_repositorio.dart';
@@ -18,7 +18,6 @@ class UbicacionRepositorioImpl implements UbicacionRepositorio {
     QuerySnapshot snapshot = await firestore.collection('sucursales').get();
     return snapshot.docs.map((doc) {
       final data = doc.data() as Map<String, dynamic>;
-      final GeoPoint geoPoint = data['ubicacion'];
       return Sucursal(
         id: data['id'],
         nombreSucursal: data['nombreSucursal'],
@@ -26,8 +25,7 @@ class UbicacionRepositorioImpl implements UbicacionRepositorio {
         direccion: data['direccion'],
         estado: data['estado'],
         telefono: data['telefono'],
-        latitude: geoPoint.latitude,
-        longitude: geoPoint.longitude,
+        ubicacion: data['ubicacion'],
       );
     }).toList();
   }
@@ -162,7 +160,6 @@ class UbicacionRepositorioImpl implements UbicacionRepositorio {
     QuerySnapshot snapshot = await firestore.collection('sucursales').get();
     return snapshot.docs.map((doc) {
       final data = doc.data() as Map<String, dynamic>;
-      final GeoPoint geoPoint = data['ubicacion'];
       return Sucursal(
         id: data['id'],
         nombreSucursal: data['nombreSucursal'],
@@ -170,8 +167,7 @@ class UbicacionRepositorioImpl implements UbicacionRepositorio {
         direccion: data['direccion'],
         estado: data['estado'],
         telefono: data['telefono'],
-        latitude: geoPoint.latitude,
-        longitude: geoPoint.longitude,
+        ubicacion: data['ubicacion'],
       );
     }).toList();
   }

@@ -1,7 +1,7 @@
 class Mesa {
   final String? id;
   final String descripcion;
-  final int numero;
+  final double numero;
   final String estado;
 
   Mesa({
@@ -33,7 +33,7 @@ class Mesa {
   Mesa copyWith({
     String? id,
     String? descripcion,
-    int? numero,
+    double? numero,
     String? estado
   }){
     return Mesa(

@@ -1,20 +1,17 @@
-
-import 'package:restaurant_app/features/productos/dominio/entidades/categoria.dart';
+import 'package:equatable/equatable.dart';
 import 'package:restaurant_app/features/productos/dominio/entidades/producto.dart';
 
-class CategoriaConProductos {
-  final Categoria categoria;
+class CategoriaProductos extends Equatable {
+  final String id;
+  final String nombre;
   final List<Producto> productos;
 
-  CategoriaConProductos({
-    required this.categoria,
+  const CategoriaProductos({
+    required this.id,
+    required this.nombre,
     required this.productos,
   });
 
-  Map<String, dynamic> toJson() {
-    return {
-      'categoria': categoria.toJson(),
-      'productos': productos.map((producto) => producto.toJson()).toList(),
-    };
-  }
+  @override
+  List<Object?> get props => [id, nombre, productos];
 }

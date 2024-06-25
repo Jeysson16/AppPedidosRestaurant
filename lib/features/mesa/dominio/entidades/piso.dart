@@ -2,10 +2,10 @@ import 'package:restaurant_app/features/mesa/dominio/entidades/mesa.dart';
 
 class  Piso {
   final String? id;
-  final int cantidadMesas;
+  final double cantidadMesas;
   final String descripcion;
   final String nombre;
-  final int numero;
+  final double numero;
   final List<Mesa>? mesas;
 
   Piso ({

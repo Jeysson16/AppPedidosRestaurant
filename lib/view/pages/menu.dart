@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:restaurant_app/features/autenticacion/presentacion/paginas/registrar_pagina.dart';
+import 'package:restaurant_app/features/auth/presentacion/paginas/registrar_pagina.dart';
 import 'package:restaurant_app/view/pages/mesas/seleccionar_mesa.dart';
 import 'package:restaurant_app/view/pages/productos/registrar_productos.dart';
 import 'package:restaurant_app/app/global/preferencias/pref_usuarios.dart';

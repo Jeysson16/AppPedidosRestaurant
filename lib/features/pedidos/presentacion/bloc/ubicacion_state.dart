@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:restaurant_app/features/autenticacion/dominio/entidades/sucursal.dart';
+import 'package:restaurant_app/features/mesa/dominio/entidades/sucursal.dart';
 import 'package:restaurant_app/features/pedidos/data/model/calle_sugerencias.dart';
 
 

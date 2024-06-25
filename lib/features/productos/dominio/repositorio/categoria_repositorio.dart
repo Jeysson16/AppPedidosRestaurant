@@ -7,6 +7,6 @@ abstract class CategoriaRepository {
   Future<void> crearCategoria(Categoria categoria);
   Future<void> actualizarCategoria(Categoria categoria);
   Future<void> eliminarCategoria(String id);
-  Future<List<CategoriaConProductos>> buscarCategoriasPorNombre(String nombre, String sucursalId);
-  Future<List<CategoriaConProductos>> obtenerCategoriasConProductos(String sucursalId);
+  Future<List<CategoriaProductos>> buscarCategoriasPorNombre(String nombre, String sucursalId);
+  Future<List<CategoriaProductos>> obtenerCategoriasConProductos(String sucursalId);
 }

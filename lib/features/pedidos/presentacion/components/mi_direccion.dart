@@ -161,7 +161,7 @@ class _MiUbicacionState extends State<MiUbicacion> {
                   final sucursales = state.sucursales;
                   markers = sucursales.map((sucursal) {
                     return Marker(
-                      point: LatLng(sucursal.latitude, sucursal.longitude),
+                      point: LatLng(sucursal.ubicacion.latitude, sucursal.ubicacion.longitude),
                       width: 20,
                       height: 20,
                       child: const Image(image: AssetImage("assets/marker.png")),

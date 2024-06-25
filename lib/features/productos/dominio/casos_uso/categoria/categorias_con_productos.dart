@@ -5,7 +5,7 @@ class ObtenerCategoriasConProductosCasodeUso {
 
   ObtenerCategoriasConProductosCasodeUso(this.repository);
 
-  Future<List<CategoriaConProductos>> execute(String sucursalId) {
+  Future<List<CategoriaProductos>> execute(String sucursalId) {
     return repository.obtenerCategoriasConProductos(sucursalId);
   }
 }

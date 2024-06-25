@@ -1,4 +1,3 @@
-
 import 'package:restaurant_app/features/productos/dominio/entidades/tamano.dart';
 import 'package:restaurant_app/features/productos/dominio/entidades/variante.dart';
 import 'package:restaurant_app/features/productos/dominio/entidades/agregado.dart';
@@ -13,7 +12,7 @@ class Producto {
   final List<Tamano>? tamanos;
   final List<Variante>? variantes;
   final List<Agregado>? agregados;
-  final String? descripcion;
+  final String descripcion;
 
   Producto({
     this.id,
@@ -25,45 +24,42 @@ class Producto {
     this.tamanos,
     this.variantes,
     this.agregados,
-    this.descripcion,
+    required this.descripcion,
   });
 
-  factory Producto.fromJson(Map<String, dynamic> json){
+  factory Producto.fromJson(Map<String, dynamic> json) {
     return Producto(
-        id: json["id"] as String?,
-        nombre: json["nombre"],
-        precio: json["precio"] as double,
-        promocion: json["promocion"] as double?,
-        imagenPrincipal: json["imagenPrincipal"] as String?,
-        galeria: json["galeria"] == null ? null : List<String>.from(json["galeria"]),
-        descripcion: json["descripcion"] as String?,
-        tamanos: json["tamanos"] == null
-            ? null
-            : List<Tamano>.from(
-                json["tamanos"].map((x) => Tamano.fromJson(x))),
-        variantes: json["variantes"] == null
-            ? null
-            : List<Variante>.from(
-                json["variantes"].map((x) => Variante.fromJson(x))),
-        agregados: json["agregados"] == null
-            ? null
-            : List<Agregado>.from(
-                json["agregados"].map((x) => Agregado.fromJson(x))),
-  );
+      id: json["id"] as String?,
+      nombre: json["nombre"],
+      precio: json["precio"] as double,
+      promocion: json["promocion"] as double?,
+      imagenPrincipal: json["imagenPrincipal"] as String?,
+      galeria: json["galeria"] == null ? null : List<String>.from(json["galeria"]),
+      descripcion: json["descripcion"] as String,
+      tamanos: json["tamanos"] == null
+          ? null
+          : (json["tamanos"] as List).map((x) => Tamano.fromJson(x)).toList(),
+      variantes: json["variantes"] == null
+          ? null
+          : (json["variantes"] as List).map((x) => Variante.fromJson(x)).toList(),
+      agregados: json["agregados"] == null
+          ? null
+          : (json["agregados"] as List).map((x) => Agregado.fromJson(x)).toList(),
+    );
   }
 
   Map<String, dynamic> toJson() {
     return {
-        "id": id,
-        "nombre": nombre,
-        "imagenPrincipal": imagenPrincipal,
-        "galeria": galeria,
-        "descripcion": descripcion, 
-        "precio": precio,
-        "promocion": promocion,
-        "tamanos": tamanos?.map((x) => x.toJson()).toList(),
-        "variantes": variantes?.map((x) => x.toJson()).toList(),
-        "agregados": agregados?.map((x) => x.toJson()).toList(),
+      "id": id,
+      "nombre": nombre,
+      "imagenPrincipal": imagenPrincipal,
+      "galeria": galeria,
+      "descripcion": descripcion,
+      "precio": precio,
+      "promocion": promocion,
+      "tamanos": tamanos?.map((x) => x.toJson()).toList(),
+      "variantes": variantes?.map((x) => x.toJson()).toList(),
+      "agregados": agregados?.map((x) => x.toJson()).toList(),
     };
   }
 

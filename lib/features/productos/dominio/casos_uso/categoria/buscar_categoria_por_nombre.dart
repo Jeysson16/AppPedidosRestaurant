@@ -6,7 +6,7 @@ class BuscarCategoriasPorNombreCasodeUso {
 
   BuscarCategoriasPorNombreCasodeUso(this.repository);
 
-  Future<List<CategoriaConProductos>> execute(String nombre, String sucursalId) {
+  Future<List<CategoriaProductos>> execute(String nombre, String sucursalId) {
     return repository.buscarCategoriasPorNombre(nombre, sucursalId);
   }
 }
