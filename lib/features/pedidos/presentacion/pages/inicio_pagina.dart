@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:restaurant_app/app/global/view/components/my_sliver_app_bar.dart';
 import 'package:restaurant_app/features/mesa/data/repositorios/firebase_sucursal_repositorio.dart';
 import 'package:restaurant_app/features/mesa/presentacion/bloc/sucursal_bloc.dart';
 import 'package:restaurant_app/app/global/view/components/my_drawer.dart';

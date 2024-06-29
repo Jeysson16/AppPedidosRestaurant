@@ -15,7 +15,6 @@ class SucursalRepositoryImpl implements SucursalRepository {
     try {
       QuerySnapshot querySnapshot = await firestore.collection('sucursal').get();
       return querySnapshot.docs.map((doc) {
-        print(doc.data()); // Imprimir datos del documento para verificar el contenido
         final data = doc.data() as Map<String, dynamic>;
         data['id'] = doc.id;
         return Sucursal.fromJson(data);

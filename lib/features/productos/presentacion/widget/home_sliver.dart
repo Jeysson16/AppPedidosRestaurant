@@ -169,7 +169,7 @@ class _FlexibleSpaceBarHeader extends StatelessWidget {
   }
 }
 
-const _maxHeaderExtent = 100.0;
+const _maxHeaderExtent = 110.0;
 
 class _HeaderSliver extends SliverPersistentHeaderDelegate {
   _HeaderSliver({required this.bloc, required this.sucursal});
@@ -190,6 +190,7 @@ class _HeaderSliver extends SliverPersistentHeaderDelegate {
       color: Theme.of(context).colorScheme.surface,
       child: Column(
         children: [
+          const SizedBox(width: 20),
           const SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -213,7 +214,7 @@ class _HeaderSliver extends SliverPersistentHeaderDelegate {
                     offset: Offset(percent < 0.1 ? -0.18 : 0.1, 0),
                     curve: Curves.easeIn,
                     child: Text(
-                      "     "+sucursal.nombreSucursal,
+                      sucursal.nombreSucursal,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.inversePrimary,
                         fontSize: 20,

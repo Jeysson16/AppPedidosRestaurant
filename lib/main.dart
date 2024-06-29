@@ -29,7 +29,6 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await PreferenciasUsuario.init();
-
   final ubicacionRepositorio = UbicacionRepositorioImpl(
     mapboxToken: "pk.eyJ1IjoiamV5c3NvbjM2IiwiYSI6ImNseG92MXl3MTBiOTUya3B3cjV2NngyMWsifQ.x8I5goP1hAQwWME3obHsZg",
     firestore: FirebaseFirestore.instance,
@@ -64,7 +63,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: const IngresarORegistrar(),
-      title: 'Restaurant Sabor y Sazon',
+      title: 'Restaurant D Gilberth',
       theme: Provider.of<ThemeProvider>(context).themeData,
     );
   }
