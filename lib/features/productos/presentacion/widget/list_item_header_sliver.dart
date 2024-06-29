@@ -48,7 +48,7 @@ class ListItemHeaderSliver extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 8),
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
-                          color: index == snapshot!.index ? Colors.white : null,
+                          color: index == snapshot!.index ? Theme.of(context).colorScheme.primary.withOpacity(0.1) : null,
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Text(
@@ -56,8 +56,8 @@ class ListItemHeaderSliver extends StatelessWidget {
                           style: TextStyle(
                             fontWeight: FontWeight.w500,
                             color: index == snapshot.index
-                                ? Theme.of(context).colorScheme.onPrimary
-                                : Colors.white,
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.primary,
                           ),
                         ),
                       ),

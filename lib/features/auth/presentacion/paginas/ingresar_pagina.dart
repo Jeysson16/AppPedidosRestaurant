@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:restaurant_app/app/global/view/components/my_button.dart';
 import 'package:restaurant_app/app/global/view/components/my_textfield.dart';
 import 'package:restaurant_app/features/auth/data/repositorios/firebase_empleado_repositorio.dart';
-import 'package:restaurant_app/features/pedidos/presentacion/components/mi_direccion.dart';
 import 'package:restaurant_app/features/pedidos/presentacion/pages/inicio_pagina.dart';
 
 class Entrar extends StatefulWidget {
@@ -30,7 +29,7 @@ class _EntrarState extends State<Entrar> {
   void iniciar() {
     Navigator.push(
       context, 
-      MaterialPageRoute(builder: (context) => const MiUbicacion())
+      MaterialPageRoute(builder: (context) => const InicioPagina())
     );
   }
 

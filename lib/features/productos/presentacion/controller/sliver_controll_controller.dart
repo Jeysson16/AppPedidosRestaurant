@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:restaurant_app/features/mesa/dominio/entidades/sucursal.dart';
 import 'package:restaurant_app/features/productos/data/models/my_header.dart';
 import 'package:restaurant_app/features/productos/data/repositorio/firebase_categoria_repositorio.dart';
 import 'package:restaurant_app/features/productos/dominio/entidades/categoria_productos.dart';
@@ -43,16 +44,22 @@ class SliverScrollController {
   // Para tener control total del scroll
   late ScrollController scrollControllerGlobally;
 
+  void scrollToTop() {
+    scrollControllerGlobally.animateTo(
+      0,
+      duration: Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+    );
+  }
+  
   // Valor que indica si el encabezado es visible
   final visibleHeader = ValueNotifier(false);
 
-  Future<void> loadData(String sucursalId) async {
-    listCategory = await categoriaProductosRepository.obtenerCategoriasConProductos(sucursalId);
-    var banners = await bannerRepository.obtenerBanners(sucursalId);
-    bannerUrls = banners.map((banner) => banner.url!).toList();
-
+  Future<void> loadData(Sucursal sucursal) async {
+    listCategory = await categoriaProductosRepository.obtenerCategoriasConProductos(sucursal.id ?? 'defaultId');
+    var banners = await bannerRepository.obtenerBanners(sucursal.id ?? 'defaultId');
+    bannerUrls = banners.map((banner) => banner.url ?? 'defaultUrl').toList();
     listOffSetItemHeader = List.generate(listCategory.length, (index) => index.toDouble());
-
     scrollControllerItemHeader = ScrollController();
 
     headerNotifier.addListener(_listenHeaderNotifier);

@@ -63,9 +63,9 @@ class SliverBodyItems extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                           image: DecorationImage(
                             fit: BoxFit.cover,
-                            image: AssetImage(
-                              product.imagenPrincipal ?? 'assets/restaurant.png',
-                            ),
+                            image: product.imagenPrincipal != null
+                                ? NetworkImage(product.imagenPrincipal!)
+                                : const AssetImage('assets/restaurant.png') as ImageProvider,
                           ),
                         ),
                         height: 140,
@@ -78,7 +78,7 @@ class SliverBodyItems extends StatelessWidget {
                   const SizedBox(height: 32),
                   Container(
                     height: 0.5,
-                    color: Colors.white.withOpacity(0.3),
+                    color: Theme.of(context).colorScheme.surface,
                   )
                 ]
               ],

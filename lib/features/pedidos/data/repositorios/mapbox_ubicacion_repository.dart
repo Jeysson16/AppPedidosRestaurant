@@ -25,7 +25,9 @@ class UbicacionRepositorioImpl implements UbicacionRepositorio {
         direccion: data['direccion'],
         estado: data['estado'],
         telefono: data['telefono'],
-        ubicacion: data['ubicacion'],
+        ubicacion: data['ubicacion'], 
+        horaAtencionCerrado: data['horaAtencionCerrado'], 
+        horaAtencionAbierto: data['horaAtencionAbierto'],
       );
     }).toList();
   }
@@ -168,6 +170,8 @@ class UbicacionRepositorioImpl implements UbicacionRepositorio {
         estado: data['estado'],
         telefono: data['telefono'],
         ubicacion: data['ubicacion'],
+        horaAtencionCerrado: data['horaAtencionCerrado'], 
+        horaAtencionAbierto: data['horaAtencionAbierto'],
       );
     }).toList();
   }

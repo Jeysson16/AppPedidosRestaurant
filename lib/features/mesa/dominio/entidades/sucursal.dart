@@ -8,6 +8,8 @@ class Sucursal {
   final String estado;
   final String telefono;
   final GeoPoint ubicacion;
+  final String horaAtencionAbierto;
+  final String horaAtencionCerrado;
 
   Sucursal({
     this.id,
@@ -16,7 +18,9 @@ class Sucursal {
     required this.direccion,
     required this.estado,
     required this.telefono,
-    required this.ubicacion
+    required this.ubicacion,
+    required this.horaAtencionCerrado,
+    required this.horaAtencionAbierto
   });
 
   factory Sucursal.fromJson(Map<String, dynamic> json) {
@@ -30,6 +34,8 @@ class Sucursal {
       estado: json['estado'],
       telefono: json['telefono'],
       ubicacion: json['ubicacion'],
+      horaAtencionAbierto: json['horaAtencionAbierto'],
+      horaAtencionCerrado: json['horaAtencionCerrado']
     );
   }
 
@@ -42,6 +48,8 @@ class Sucursal {
       'estado': estado,
       'telefono': telefono,
       'ubicacion': ubicacion,
+      'horaAtencionAbierto': horaAtencionAbierto,
+      'horaAtencionCerrado': horaAtencionCerrado
     };
   }
 }

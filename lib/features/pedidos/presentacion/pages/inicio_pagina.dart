@@ -8,8 +8,6 @@ import 'package:restaurant_app/app/global/view/components/my_drawer.dart';
 import 'package:restaurant_app/features/productos/data/repositorio/firebase_banner_repositorio.dart';
 import 'package:restaurant_app/features/productos/data/repositorio/firebase_categoria_repositorio.dart';
 import 'package:restaurant_app/features/productos/presentacion/bloc/categoria/categoria_producto_bloc.dart';
-import 'package:restaurant_app/features/productos/presentacion/bloc/categoria/categoria_producto_event.dart';
-import 'package:restaurant_app/features/productos/presentacion/bloc/categoria/categoria_producto_state.dart';
 import 'package:restaurant_app/features/productos/presentacion/controller/sliver_controll_controller.dart';
 import 'package:restaurant_app/features/productos/presentacion/widget/home_sliver.dart';
 
@@ -21,8 +19,6 @@ class InicioPagina extends StatefulWidget {
 }
 
 class _InicioPaginaState extends State<InicioPagina> {
-  String? sucursalSeleccionada;
-
   @override
   Widget build(BuildContext context) {
     final firestoreInstance = FirebaseFirestore.instance;
@@ -47,77 +43,19 @@ class _InicioPaginaState extends State<InicioPagina> {
               return const Center(child: CircularProgressIndicator());
             } else if (sucursalState is SucursalLoaded) {
               final sucursales = sucursalState.sucursales;
-
-              if (sucursales.isNotEmpty && sucursalSeleccionada == null) {
-                sucursalSeleccionada = "fXRPjNfB9ZehJPBR640y";
+              if (sucursales.isEmpty) {
+                return const Center(child: Text('No hay sucursales disponibles'));
               }
-
-              return NestedScrollView(
-                headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                  MySliverAppBar(
-                    title: const Text("Menú del Dia"),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        DropdownButton<String>(
-                          value: sucursalSeleccionada,
-                          hint: const Text("Seleccionar sucursal"),
-                          items: sucursales.map((sucursal) {
-                            return DropdownMenuItem<String>(
-                              value: sucursal.id,
-                              child: Text(sucursal.nombreSucursal),
-                            );
-                          }).toList(),
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              sucursalSeleccionada = newValue;
-                              if (newValue != null) {
-                                context.read<ProductosBloc>().add(LoadProductos(newValue));
-                              }
-                            });
-                          },
-                        ),
-                        if (sucursalSeleccionada != null && sucursales.any((sucursal) => sucursal.id == sucursalSeleccionada))
-                          BlocBuilder<ProductosBloc, ProductosState>(
-                            builder: (context, productosState) {
-                              if (productosState is ProductosLoading) {
-                                return const Center(child: CircularProgressIndicator());
-                              } else if (productosState is ProductosLoaded) {
-                                final categoriasConProductos = productosState.categoriasConProductos;
-                                final sucursalSeleccionadaData = sucursales.firstWhere((sucursal) => sucursal.id == sucursalSeleccionada);
-
-                                return HomeSliverWithTab(
-                                  bloc: SliverScrollController(
-                                    categoriaProductosRepository,
-                                    bannerRepository,
-                                  ),
-                                );
-                              } else if (productosState is ProductosError) {
-                                return Center(child: Text(productosState.message));
-                              }
-                              return const SizedBox.shrink();
-                            },
-                          ),
-                      ],
-                    ),
-                  ),
-                ],
-                body: Container(
-                  color: Theme.of(context).colorScheme.error,
-                  height: 400,
-                  // Aquí incluimos el HomeSliverWithTab en lugar de MiUbicacion
-                  child: HomeSliverWithTab(
-                    bloc: SliverScrollController(
-                      categoriaProductosRepository,
-                      bannerRepository,
-                    ),
-                    ),
+              return HomeSliverWithTab(
+                bloc: SliverScrollController(
+                  categoriaProductosRepository,
+                  bannerRepository,
                 ),
+                sucursales: sucursales,
               );
             } else if (sucursalState is SucursalError) {
               return Center(child: Text(sucursalState.message));
             }
-
             return const Center(child: Text('No hay sucursales disponibles'));
           },
         ),

@@ -1,5 +1,5 @@
 import 'package:restaurant_app/features/pedidos/dominio/entidades/detalle.dart';
-import 'package:restaurant_app/features/pedidos/dominio/entidades/empleado_referenciado';
+import 'package:restaurant_app/features/pedidos/dominio/entidades/empleado_referenciado.dart';
 
 class Pedido {
   final String? id;
