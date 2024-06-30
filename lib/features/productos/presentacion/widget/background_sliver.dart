@@ -1,12 +1,16 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:restaurant_app/features/productos/dominio/entidades/banner.dart';
+
 
 class BackgroundSliver extends StatelessWidget {
-  final List<String> bannerUrls;
+  final List<BannerOfertas> banners;
+  final Function(String? categoryId, String? productId) onBannerTap;
 
   const BackgroundSliver({
     super.key,
-    required this.bannerUrls,
+    required this.banners,
+    required this.onBannerTap,
   });
 
   @override
@@ -19,17 +23,16 @@ class BackgroundSliver extends StatelessWidget {
           autoPlayInterval: const Duration(seconds: 10),
           enlargeCenterPage: true,
         ),
-        items: bannerUrls.map((url) {
-          return Builder(
-            builder: (BuildContext context) {
-              return Image.network(
-                url,
-                fit: BoxFit.fill,
-                width: double.infinity,
-                colorBlendMode: BlendMode.darken,
-                color: Theme.of(context).colorScheme.surface.withOpacity(0.2),
-              );
-            },
+        items: banners.map((banner) {
+          return GestureDetector(
+            onTap: () => onBannerTap(banner.categoriaId, banner.productoId),
+            child: Image.network(
+              banner.url ?? '',
+              fit: BoxFit.cover,
+              width: double.infinity,
+              colorBlendMode: BlendMode.darken,
+              color: Theme.of(context).colorScheme.surface.withOpacity(0.2),
+            ),
           );
         }).toList(),
       ),

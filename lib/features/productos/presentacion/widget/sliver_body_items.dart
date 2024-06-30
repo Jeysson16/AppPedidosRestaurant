@@ -75,10 +75,13 @@ class SliverBodyItems extends StatelessWidget {
                   ),
                 ),
                 if (index == listItem.length - 1) ...[
-                  const SizedBox(height: 32),
-                  Container(
-                    height: 0.5,
-                    color: Theme.of(context).colorScheme.surface,
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      height: 0.5,
+                      color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.3),
+                    ),
                   )
                 ]
               ],

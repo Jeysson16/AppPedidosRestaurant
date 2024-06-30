@@ -19,7 +19,7 @@ class ConfiguracionPagina extends StatelessWidget {
           children: [
             Container(
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondary,
+                color: Theme.of(context).colorScheme.onSurface.withAlpha(20),
                 borderRadius: BorderRadius.circular(12)
               ),
 

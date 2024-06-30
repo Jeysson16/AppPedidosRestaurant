@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:restaurant_app/features/mesa/dominio/entidades/sucursal.dart';
 import 'package:restaurant_app/features/productos/data/models/my_header.dart';
 import 'package:restaurant_app/features/productos/data/repositorio/firebase_categoria_repositorio.dart';
+import 'package:restaurant_app/features/productos/dominio/entidades/banner.dart';
 import 'package:restaurant_app/features/productos/dominio/entidades/categoria_productos.dart';
 import 'package:restaurant_app/features/productos/dominio/repositorio/banner_repositorio.dart';
 
@@ -14,11 +15,15 @@ class SliverScrollController {
   SliverScrollController(this.categoriaProductosRepository, this.bannerRepository) {
     scrollControllerGlobally = ScrollController();
     listCategory = [];
-    bannerUrls = [];
+    categoryKeys = {};
+    banners=[];
   }
 
-  // Lista de URLs de banners
-  late List<String> bannerUrls;
+  // Lista de banners
+  late List<BannerOfertas> banners;
+
+  // Mapa de claves únicas para las categorías
+  late Map<String, GlobalKey> categoryKeys;
 
   // Lista de categorías con productos
   late List<CategoriaProductos> listCategory;
@@ -47,7 +52,7 @@ class SliverScrollController {
   void scrollToTop() {
     scrollControllerGlobally.animateTo(
       0,
-      duration: Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 500),
       curve: Curves.easeInOut,
     );
   }
@@ -57,10 +62,14 @@ class SliverScrollController {
 
   Future<void> loadData(Sucursal sucursal) async {
     listCategory = await categoriaProductosRepository.obtenerCategoriasConProductos(sucursal.id ?? 'defaultId');
-    var banners = await bannerRepository.obtenerBanners(sucursal.id ?? 'defaultId');
-    bannerUrls = banners.map((banner) => banner.url ?? 'defaultUrl').toList();
+    banners = await bannerRepository.obtenerBanners(sucursal.id ?? 'defaultId');
     listOffSetItemHeader = List.generate(listCategory.length, (index) => index.toDouble());
     scrollControllerItemHeader = ScrollController();
+
+    // Asignar GlobalKeys a las categorías
+    for (var category in listCategory) {
+      categoryKeys[category.id] = GlobalKey();
+    }
 
     headerNotifier.addListener(_listenHeaderNotifier);
     scrollControllerGlobally.addListener(_listenToScrollChange);
@@ -74,8 +83,21 @@ class SliverScrollController {
   }
 
   void dispose() {
-    scrollControllerItemHeader.dispose();
-    scrollControllerGlobally.dispose();
+    headerNotifier.removeListener(_listenHeaderNotifier);
+    scrollControllerGlobally.removeListener(_listenToScrollChange);
+    visibleHeader.removeListener(_listenVisibleHeader);
+    if (scrollControllerItemHeader.hasClients) {
+        scrollControllerItemHeader.dispose();
+    }
+
+    if (scrollControllerGlobally.hasClients) {
+        scrollControllerGlobally.dispose();
+    }
+    headerNotifier.dispose();
+    globalOffsetValue.dispose();
+    goingDown.dispose();
+    valueScroll.dispose();
+    visibleHeader.dispose();
   }
 
   void _listenHeaderNotifier() {
@@ -106,18 +128,33 @@ class SliverScrollController {
   }
 
   void refreshHeader(int index, bool visible, {int? lastIndex}) {
-    final headerValue = headerNotifier.value;
-    final headerTitle = headerValue?.index ?? index;
-    final headerVisible = headerValue?.visible ?? false;
+  final headerValue = headerNotifier.value;
+  final headerTitle = headerValue?.index ?? index;
+  final headerVisible = headerValue?.visible ?? false;
 
-    if (headerTitle != index || lastIndex != null || headerVisible != visible) {
-      Future.microtask(() {
-        if (!visible && lastIndex != null) {
-          headerNotifier.value = MyHeader(visible: true, index: lastIndex);
-        } else {
-          headerNotifier.value = MyHeader(visible: visible, index: index);
-        }
-      });
-    }
+  if (headerTitle != index || lastIndex != null || headerVisible != visible) {
+    Future.microtask(() {
+      if (!visible && lastIndex != null) {
+        headerNotifier.value = MyHeader(visible: true, index: lastIndex);
+      } else {
+        headerNotifier.value = MyHeader(visible: visible, index: index);
+      }
+      if (visible) {
+        scrollAnimationHorizontal(index: index);
+      }
+    });
   }
+}
+
+
+  void scrollToCategory(String categoryId) {
+  final key = categoryKeys[categoryId];
+  if (key != null) {
+    Scrollable.ensureVisible(
+      key.currentContext!,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+}
 }

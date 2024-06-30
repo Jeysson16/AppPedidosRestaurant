@@ -7,24 +7,24 @@ import 'package:restaurant_app/features/productos/presentacion/widget/my_heather
 import 'package:restaurant_app/features/productos/presentacion/widget/sliver_body_items.dart';
 import 'package:restaurant_app/features/productos/presentacion/widget/sliver_header_data.dart';
 
-class HomeSliverWithTab extends StatefulWidget {
+class VistaProductos extends StatefulWidget {
   final SliverScrollController bloc;
   final List<Sucursal> sucursales;
 
-  const HomeSliverWithTab({
+  const VistaProductos({
     super.key,
     required this.bloc,
     required this.sucursales,
   });
 
   @override
-  State<HomeSliverWithTab> createState() => _HomeSliverWithTabState();
+  State<VistaProductos> createState() => _VistaProductosState();
 }
 
-class _HomeSliverWithTabState extends State<HomeSliverWithTab> {
+class _VistaProductosState extends State<VistaProductos> {
   String? sucursalSeleccionada;
   Sucursal? sucursalSeleccionadaData;
-final ValueNotifier<bool> showDropdown = ValueNotifier(true);
+  final ValueNotifier<bool> showDropdown = ValueNotifier(true);
 
   @override
   void initState() {
@@ -44,128 +44,164 @@ final ValueNotifier<bool> showDropdown = ValueNotifier(true);
     super.dispose();
   }
 
+  void handleBannerTap(String? categoryId, String? productId) {
+    if (categoryId != null) {
+      scrollToCategory(categoryId);
+    }
+    // Add logic here if you need to scroll to a specific product within a category
+  }
+
+  void scrollToCategory(String categoryId) {
+    widget.bloc.scrollToCategory(categoryId);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Theme(
-      data: Theme.of(context), // Usa el tema actual
+      data: Theme.of(context),
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
-        body: Column(
+        body: Stack(
           children: [
-            const SizedBox(height: 30),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0), 
-              child: ValueListenableBuilder<bool>(
-                valueListenable: showDropdown,
-                builder: (context, value, child) {
-                  return AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                child: value
-                        ? Container(
-                        key: ValueKey(sucursalSeleccionada),
-                padding: const EdgeInsets.only(left: 16, right: 16),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Theme.of(context).colorScheme.primary,width: 1),
-                  borderRadius: BorderRadius.circular(15)
-                ),
-                
-              child: DropdownButton<String>(
-                value: sucursalSeleccionada,
-                isExpanded: true,
-                hint: const Text("Seleccionar sucursal"),
-                items: widget.sucursales.map((sucursal) {
-                  return DropdownMenuItem<String>(
-                    alignment: Alignment.center,
-                    value: sucursal.id,
-                    child: Text(
-                        sucursal.nombreSucursal,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary,
-                          fontSize: 16,
-                        ),
-                      ),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    sucursalSeleccionada = newValue;
-                    if (newValue != null) {
-                      sucursalSeleccionadaData = widget.sucursales.firstWhere((sucursal) => sucursal.id == newValue);
-                      widget.bloc.loadData(sucursalSeleccionadaData!).then((_) {
-                        setState(() {}); // Forzar actualización de la UI
-                      });
-                    }
-                  });
-                },
-                  dropdownColor: Theme.of(context).colorScheme.surface, // Color de fondo del menú desplegable
-                  icon: Icon(Icons.arrow_drop_down, color: Theme.of(context).iconTheme.color), // Color del icono
-                  underline: const SizedBox(),
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.primary, // Color del texto seleccionado
-                    fontSize: 16,
-                    ),
-                      ),
-                    )
-                  : const SizedBox.shrink(),
-                  );
-                },
-              ),
-            ),
-            Expanded(
-              child: widget.bloc.listCategory.isEmpty
-                  ? const Center(child: CircularProgressIndicator())
-                  : NotificationListener<ScrollNotification>(
-                      onNotification: (scroll) {
-                        if (scroll is ScrollUpdateNotification) {
-                          widget.bloc.valueScroll.value = scroll.metrics.extentInside;
-                        if (scroll.metrics.pixels > 0 && showDropdown.value) {
-                            showDropdown.value = false;
-                          } else if (scroll.metrics.pixels <= 0 && !showDropdown.value) {
-                            showDropdown.value = true;
-                          }
-                        }
-                        return true;
-                      },
-                      child: Scrollbar(
-                        radius: const Radius.circular(8),
-                        child: ValueListenableBuilder<double>(
-                          valueListenable: widget.bloc.globalOffsetValue,
-                          builder: (_, double valueCurrentScroll, __) {
-                            return CustomScrollView(
-                              physics: const BouncingScrollPhysics(),
-                              controller: widget.bloc.scrollControllerGlobally,
-                              slivers: [
-                                _FlexibleSpaceBarHeader(
-                                  valueScroll: valueCurrentScroll,
-                                  bloc: widget.bloc,
-                                  sucursal: sucursalSeleccionadaData!,
-                                ),
-                                SliverPersistentHeader(
-                                  pinned: true,
-                                  delegate: _HeaderSliver(
-                                    bloc: widget.bloc,
-                                    sucursal: sucursalSeleccionadaData!,
+            Positioned.fill(
+              child: Column(
+                children: [
+                  const SizedBox(height: 30),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: ValueListenableBuilder<bool>(
+                      valueListenable: showDropdown,
+                      builder: (context, value, child) {
+                        return AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 300),
+                          child: value
+                              ? Container(
+                                  key: ValueKey(sucursalSeleccionada),
+                                  padding: const EdgeInsets.only(left: 8, right: 8),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                        color: Theme.of(context).colorScheme.primary,
+                                        width: 1),
+                                    borderRadius: BorderRadius.circular(15),
                                   ),
-                                ),
-                                for (var i = 0; i < widget.bloc.listCategory.length; i++) ...[
-                                  SliverPersistentHeader(
-                                    delegate: MyHeaderTitle(
-                                      widget.bloc.listCategory[i].nombre,
-                                      (visible) => widget.bloc.refreshHeader(
-                                        i,
-                                        visible,
-                                        lastIndex: i > 0 ? i - 1 : null,
-                                      ),
+                                  child: DropdownButton<String>(
+                                    value: sucursalSeleccionada,
+                                    isExpanded: true,
+                                    hint: const Text("Seleccionar sucursal"),
+                                    items: widget.sucursales.map((sucursal) {
+                                      return DropdownMenuItem<String>(
+                                        alignment: Alignment.center,
+                                        value: sucursal.id,
+                                        child: Text(
+                                          sucursal.nombreSucursal,
+                                          style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        sucursalSeleccionada = newValue;
+                                        if (newValue != null) {
+                                          sucursalSeleccionadaData = widget
+                                              .sucursales
+                                              .firstWhere((sucursal) =>
+                                                  sucursal.id == newValue);
+                                          widget.bloc
+                                              .loadData(sucursalSeleccionadaData!)
+                                              .then((_) {
+                                            setState(() {}); // Forzar actualización de la UI
+                                          });
+                                        }
+                                      });
+                                    },
+                                    itemHeight: 50,
+                                    dropdownColor:
+                                        Theme.of(context).colorScheme.surface,
+                                    icon: Icon(Icons.arrow_drop_down,
+                                        color: Theme.of(context).colorScheme.primary),
+                                    borderRadius: BorderRadius.circular(15),
+                                    underline: const SizedBox(),
+                                    style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary,
+                                      fontSize: 16,
                                     ),
                                   ),
-                                  SliverBodyItems(listItem: widget.bloc.listCategory[i].productos),
-                                ],
-                              ],
-                            );
-                          },
-                        ),
-                      ),
+                                )
+                              : const SizedBox.shrink(),
+                        );
+                      },
                     ),
+                  ),
+                  Expanded(
+                    child: widget.bloc.listCategory.isEmpty
+                        ? const Center(child: CircularProgressIndicator())
+                        : NotificationListener<ScrollNotification>(
+                            onNotification: (scroll) {
+                              if (scroll is ScrollUpdateNotification) {
+                                widget.bloc.valueScroll.value = scroll.metrics.extentInside;
+                                if (scroll.metrics.pixels > 0 && showDropdown.value) {
+                                  showDropdown.value = false;
+                                } else if (scroll.metrics.pixels <= 0 && !showDropdown.value) {
+                                  showDropdown.value = true;
+                                }
+                              }
+                              return true;
+                            },
+                            child: Scrollbar(
+                              radius: const Radius.circular(8),
+                              child: ValueListenableBuilder<double>(
+                                valueListenable: widget.bloc.globalOffsetValue,
+                                builder: (_, double valueCurrentScroll, __) {
+                                  return CustomScrollView(
+                                    physics: const BouncingScrollPhysics(),
+                                    controller: widget.bloc.scrollControllerGlobally,
+                                    slivers: [
+                                      _FlexibleSpaceBarHeader(
+                                        valueScroll: valueCurrentScroll,
+                                        bloc: widget.bloc,
+                                        sucursal: sucursalSeleccionadaData!,
+                                      ),
+                                      SliverPersistentHeader(
+                                        pinned: true,
+                                        delegate: _HeaderSliver(
+                                          bloc: widget.bloc,
+                                          sucursal: sucursalSeleccionadaData!,
+                                        ),
+                                      ),
+                                      for (var category in widget.bloc.listCategory) ...[
+                                        SliverPersistentHeader(
+                                          delegate: MyHeaderTitle(
+                                            category.nombre,
+                                            (visible) => widget.bloc.refreshHeader(
+                                              widget.bloc.listCategory.indexOf(category),
+                                              visible,
+                                              lastIndex: widget.bloc.listCategory.indexOf(category) > 0
+                                                  ? widget.bloc.listCategory.indexOf(category) - 1
+                                                  : null,
+                                            ),
+                                          ),
+                                        ),
+                                        SliverBodyItems(
+                                          listItem: category.productos,
+                                          key: widget.bloc.categoryKeys[category.id],
+                                        ),
+                                      ],
+                                    ],
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -185,29 +221,39 @@ class _FlexibleSpaceBarHeader extends StatelessWidget {
   final SliverScrollController bloc;
   final Sucursal sucursal;
 
+  void handleBannerTap(String? categoryId, String? productId) {
+    if (categoryId != null) {
+      bloc.scrollToCategory(categoryId);
+    }
+    // Add logic here if you need to scroll to a specific product within a category
+  }
+
   @override
   Widget build(BuildContext context) {
-    final sizeHeight = MediaQuery.of(context).size.height;
     return SliverAppBar(
       automaticallyImplyLeading: false,
       backgroundColor: Theme.of(context).colorScheme.surface,
       stretch: true,
-      expandedHeight: 250,
-      pinned: valueScroll < 90,
+      expandedHeight: 200,
+      pinned: valueScroll < 70,
       flexibleSpace: FlexibleSpaceBar(
         collapseMode: CollapseMode.pin,
         stretchModes: const [StretchMode.zoomBackground],
         background: Stack(
           fit: StackFit.expand,
           children: [
-            if (bloc.bannerUrls.isNotEmpty)
-              BackgroundSliver(bannerUrls: bloc.bannerUrls),
+            if (bloc.banners.isNotEmpty)
+              BackgroundSliver(
+                banners: bloc.banners, 
+                onBannerTap: handleBannerTap,
+              ),
           ],
         ),
       ),
     );
   }
 }
+
 
 const _maxHeaderExtent = 110.0;
 
@@ -231,26 +277,26 @@ class _HeaderSliver extends SliverPersistentHeaderDelegate {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(width: 20),
           const SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 if (percent > 0.1) // Mostrar la flecha solo si percent > 0.1
-                GestureDetector(
-                  onTap: () {
-                    // Acción para hacer scroll al inicio
-                    bloc.scrollToTop();
-                  },
-                  child: AnimatedOpacity(
-                    opacity: percent > 0.1 ? 1 : 0,
-                    duration: const Duration(milliseconds: 300),
-                    child: const Icon(Icons.arrow_back),
+                  GestureDetector(
+                    onTap: () {
+                      // Acción para hacer scroll al inicio
+                      bloc.scrollToTop();
+                    },
+                    child: AnimatedOpacity(
+                      opacity: percent > 0.1 ? 1 : 0,
+                      duration: const Duration(milliseconds: 300),
+                      child: const Icon(Icons.arrow_back),
                     ),
                   ),
-                if (percent > 0.1) const SizedBox(width: 8.0), // Añadimos espacio solo si la flecha está visible
+                if (percent > 0.1)
+                  const SizedBox(width: 8.0), // Añadimos espacio solo si la flecha está visible
                 Expanded(
                   child: AnimatedSlide(
                     duration: const Duration(milliseconds: 300),

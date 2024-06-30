@@ -35,29 +35,36 @@ class ListItemHeaderSliver extends StatelessWidget {
                 children: List.generate(
                   bloc.listCategory.length,
                   (index) {
-                    return GetBoxOffset(
-                      offset: (offSet) {
-                        return itemsOffset[index] = offSet.dx;
+                    return GestureDetector(
+                      onTap: () {
+                        bloc.scrollToCategory(bloc.listCategory[index].id);
                       },
-                      child: Container(
-                        margin: const EdgeInsets.only(
-                          top: 8,
-                          bottom: 8,
-                          right: 8,
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: index == snapshot!.index ? Theme.of(context).colorScheme.primary.withOpacity(0.1) : null,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Text(
-                          bloc.listCategory[index].nombre,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            color: index == snapshot.index
-                                ? Theme.of(context).colorScheme.primary
-                                : Theme.of(context).colorScheme.primary,
+                      child: GetBoxOffset(
+                        offset: (offSet) {
+                          return itemsOffset[index] = offSet.dx;
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(
+                            top: 8,
+                            bottom: 8,
+                            right: 8,
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: index == snapshot!.index
+                                ? Theme.of(context).colorScheme.primary.withOpacity(0.3)
+                                : null,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Text(
+                            bloc.listCategory[index].nombre,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: index == snapshot.index
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).colorScheme.primary,
+                            ),
                           ),
                         ),
                       ),

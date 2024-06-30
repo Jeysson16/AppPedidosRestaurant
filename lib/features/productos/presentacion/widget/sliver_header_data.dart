@@ -7,12 +7,12 @@ class SliverHeaderData extends StatelessWidget {
   final String telefono;
 
   const SliverHeaderData({
-    Key? key,
+    super.key,
     required this.cuisine,
     required this.horaAtencion,
     required this.estado,
     required this.telefono,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
