@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 class SliverHeaderData extends StatelessWidget {
   final String cuisine;
   final String horaAtencion;

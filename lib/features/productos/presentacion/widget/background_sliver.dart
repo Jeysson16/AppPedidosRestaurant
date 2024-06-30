@@ -16,6 +16,7 @@ class BackgroundSliver extends StatelessWidget {
         options: CarouselOptions(
           autoPlay: true,
           aspectRatio: 2.0,
+          autoPlayInterval: const Duration(seconds: 10),
           enlargeCenterPage: true,
         ),
         items: bannerUrls.map((url) {
@@ -23,7 +24,7 @@ class BackgroundSliver extends StatelessWidget {
             builder: (BuildContext context) {
               return Image.network(
                 url,
-                fit: BoxFit.cover,
+                fit: BoxFit.fill,
                 width: double.infinity,
                 colorBlendMode: BlendMode.darken,
                 color: Theme.of(context).colorScheme.surface.withOpacity(0.2),

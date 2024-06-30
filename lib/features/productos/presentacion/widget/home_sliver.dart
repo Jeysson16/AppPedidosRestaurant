@@ -24,6 +24,7 @@ class HomeSliverWithTab extends StatefulWidget {
 class _HomeSliverWithTabState extends State<HomeSliverWithTab> {
   String? sucursalSeleccionada;
   Sucursal? sucursalSeleccionadaData;
+final ValueNotifier<bool> showDropdown = ValueNotifier(true);
 
   @override
   void initState() {
@@ -51,16 +52,38 @@ class _HomeSliverWithTabState extends State<HomeSliverWithTab> {
         backgroundColor: Theme.of(context).colorScheme.surface,
         body: Column(
           children: [
-            const SizedBox(height: 16), // Agregar espacio arriba del DropdownButton
+            const SizedBox(height: 30),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0), // Agregar padding horizontal
+              padding: const EdgeInsets.symmetric(horizontal: 16.0), 
+              child: ValueListenableBuilder<bool>(
+                valueListenable: showDropdown,
+                builder: (context, value, child) {
+                  return AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: value
+                        ? Container(
+                        key: ValueKey(sucursalSeleccionada),
+                padding: const EdgeInsets.only(left: 16, right: 16),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Theme.of(context).colorScheme.primary,width: 1),
+                  borderRadius: BorderRadius.circular(15)
+                ),
+                
               child: DropdownButton<String>(
                 value: sucursalSeleccionada,
+                isExpanded: true,
                 hint: const Text("Seleccionar sucursal"),
                 items: widget.sucursales.map((sucursal) {
                   return DropdownMenuItem<String>(
+                    alignment: Alignment.center,
                     value: sucursal.id,
-                    child: Text(sucursal.nombreSucursal),
+                    child: Text(
+                        sucursal.nombreSucursal,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary,
+                          fontSize: 16,
+                        ),
+                      ),
                   );
                 }).toList(),
                 onChanged: (String? newValue) {
@@ -74,6 +97,18 @@ class _HomeSliverWithTabState extends State<HomeSliverWithTab> {
                     }
                   });
                 },
+                  dropdownColor: Theme.of(context).colorScheme.surface, // Color de fondo del menú desplegable
+                  icon: Icon(Icons.arrow_drop_down, color: Theme.of(context).iconTheme.color), // Color del icono
+                  underline: const SizedBox(),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary, // Color del texto seleccionado
+                    fontSize: 16,
+                    ),
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+                  );
+                },
               ),
             ),
             Expanded(
@@ -83,6 +118,11 @@ class _HomeSliverWithTabState extends State<HomeSliverWithTab> {
                       onNotification: (scroll) {
                         if (scroll is ScrollUpdateNotification) {
                           widget.bloc.valueScroll.value = scroll.metrics.extentInside;
+                        if (scroll.metrics.pixels > 0 && showDropdown.value) {
+                            showDropdown.value = false;
+                          } else if (scroll.metrics.pixels <= 0 && !showDropdown.value) {
+                            showDropdown.value = true;
+                          }
                         }
                         return true;
                       },
@@ -189,13 +229,16 @@ class _HeaderSliver extends SliverPersistentHeaderDelegate {
       height: _maxHeaderExtent,
       color: Theme.of(context).colorScheme.surface,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(width: 20),
           const SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                if (percent > 0.1) // Mostrar la flecha solo si percent > 0.1
                 GestureDetector(
                   onTap: () {
                     // Acción para hacer scroll al inicio
@@ -204,14 +247,14 @@ class _HeaderSliver extends SliverPersistentHeaderDelegate {
                   child: AnimatedOpacity(
                     opacity: percent > 0.1 ? 1 : 0,
                     duration: const Duration(milliseconds: 300),
-                    child: const Icon(Icons.arrow_back), // Se añadió el icono de flecha atrás
+                    child: const Icon(Icons.arrow_back),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 8.0), // Añadimos espacio entre el icono y el texto
+                if (percent > 0.1) const SizedBox(width: 8.0), // Añadimos espacio solo si la flecha está visible
                 Expanded(
                   child: AnimatedSlide(
                     duration: const Duration(milliseconds: 300),
-                    offset: Offset(percent < 0.1 ? -0.18 : 0.1, 0),
+                    offset: Offset(percent < 0.1 ? 0 : 0.01, 0), // Ajustamos el desplazamiento para que sea más sutil
                     curve: Curves.easeIn,
                     child: Text(
                       sucursal.nombreSucursal,
@@ -243,7 +286,7 @@ class _HeaderSliver extends SliverPersistentHeaderDelegate {
           if (percent > 0.1)
             Container(
               height: 0.5,
-              color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.6),
+              color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.2),
             ),
         ],
       ),
