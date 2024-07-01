@@ -32,9 +32,45 @@ class CategoriaProductosRepositoryImpl implements CategoriaRepository {
           .collection('producto')
           .get();
 
-      List<Producto> productos = productosSnapshot.docs.map((productoDoc) {
+      List<Producto> productos = [];
+
+      for (var productoDoc in productosSnapshot.docs) {
         final productoData = productoDoc.data();
-        return Producto(
+
+        // Cargar subcolecciones de tamaños, variantes y agregados
+        final tamanosSnapshot = await firestore
+            .collection('sucursal')
+            .doc(sucursalId)
+            .collection('categoria')
+            .doc(categoriaDoc.id)
+            .collection('producto')
+            .doc(productoDoc.id)
+            .collection('tamano')
+            .get();
+        final variantesSnapshot = await firestore
+            .collection('sucursal')
+            .doc(sucursalId)
+            .collection('categoria')
+            .doc(categoriaDoc.id)
+            .collection('producto')
+            .doc(productoDoc.id)
+            .collection('variante')
+            .get();
+        final agregadosSnapshot = await firestore
+            .collection('sucursal')
+            .doc(sucursalId)
+            .collection('categoria')
+            .doc(categoriaDoc.id)
+            .collection('producto')
+            .doc(productoDoc.id)
+            .collection('agregado')
+            .get();
+
+        List<Tamano> tamanos = tamanosSnapshot.docs.map((doc) => Tamano.fromJson(doc.data())).toList();
+        List<Variante> variantes = variantesSnapshot.docs.map((doc) => Variante.fromJson(doc.data())).toList();
+        List<Agregado> agregados = agregadosSnapshot.docs.map((doc) => Agregado.fromJson(doc.data())).toList();
+
+        productos.add(Producto(
           id: productoDoc.id,
           nombre: productoData['nombre'],
           descripcion: productoData['descripcion'],
@@ -46,17 +82,11 @@ class CategoriaProductosRepositoryImpl implements CategoriaRepository {
               : null,
           imagenPrincipal: productoData['imagenPrincipal'],
           galeria: productoData['galeria'] != null ? List<String>.from(productoData['galeria']) : [],
-          tamanos: productoData['tamanos'] != null
-              ? List<Tamano>.from(productoData['tamanos'].map((t) => Tamano.fromJson(t)))
-              : [],
-          variantes: productoData['variantes'] != null
-              ? List<Variante>.from(productoData['variantes'].map((v) => Variante.fromJson(v)))
-              : [],
-          agregados: productoData['agregados'] != null
-              ? List<Agregado>.from(productoData['agregados'].map((a) => Agregado.fromJson(a)))
-              : [],
-        );
-      }).toList();
+          tamanos: tamanos,
+          variantes: variantes,
+          agregados: agregados,
+        ));
+      }
 
       categoriasConProductos.add(
         CategoriaProductos(

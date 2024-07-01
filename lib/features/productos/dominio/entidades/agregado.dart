@@ -9,7 +9,9 @@ class Agregado {
     return Agregado(
       id: json['id'] as String?,
       nombre: json['nombre'] as String,
-      precio: json['precio'] as double,
+      precio: (json['precio'] is int) 
+            ? (json['precio'] as int).toDouble()
+            : json['precio'] as double,
       );
   }
 

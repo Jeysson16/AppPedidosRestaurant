@@ -4,21 +4,23 @@ class Variante {
   final double precio;
 
   Variante({this.id, required this.nombre, required this.precio});
+
   factory Variante.fromJson(Map<String, dynamic> json) => Variante(
         id: json['id'] as String?,
         nombre: json['nombre'] as String,
-        precio: json['precio'] as double,
+        precio: (json['precio'] is int) 
+            ? (json['precio'] as int).toDouble()
+            : json['precio'] as double,
       );
 
-  // Convierte el objeto a un mapa JSON.
-  Map<String, dynamic> toJson(){
-    return{
-        'id': id,
-        'nombre': nombre,
-        'precio': precio,
-      };
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'nombre': nombre,
+      'precio': precio,
+    };
   }
-  // Crea una copia del objeto con los cambios especificados.
+
   Variante copyWith({
     String? id,
     String? nombre,

@@ -83,21 +83,19 @@ class SliverScrollController {
   }
 
   void dispose() {
+    // Eliminar los escuchas antes de llamar a dispose
     headerNotifier.removeListener(_listenHeaderNotifier);
     scrollControllerGlobally.removeListener(_listenToScrollChange);
     visibleHeader.removeListener(_listenVisibleHeader);
+
+
     if (scrollControllerItemHeader.hasClients) {
-        scrollControllerItemHeader.dispose();
+      scrollControllerItemHeader.dispose();
     }
 
     if (scrollControllerGlobally.hasClients) {
-        scrollControllerGlobally.dispose();
+      scrollControllerGlobally.dispose();
     }
-    headerNotifier.dispose();
-    globalOffsetValue.dispose();
-    goingDown.dispose();
-    valueScroll.dispose();
-    visibleHeader.dispose();
   }
 
   void _listenHeaderNotifier() {
@@ -128,33 +126,32 @@ class SliverScrollController {
   }
 
   void refreshHeader(int index, bool visible, {int? lastIndex}) {
-  final headerValue = headerNotifier.value;
-  final headerTitle = headerValue?.index ?? index;
-  final headerVisible = headerValue?.visible ?? false;
+    final headerValue = headerNotifier.value;
+    final headerTitle = headerValue?.index ?? index;
+    final headerVisible = headerValue?.visible ?? false;
 
-  if (headerTitle != index || lastIndex != null || headerVisible != visible) {
-    Future.microtask(() {
-      if (!visible && lastIndex != null) {
-        headerNotifier.value = MyHeader(visible: true, index: lastIndex);
-      } else {
-        headerNotifier.value = MyHeader(visible: visible, index: index);
-      }
-      if (visible) {
-        scrollAnimationHorizontal(index: index);
-      }
-    });
+    if (headerTitle != index || lastIndex != null || headerVisible != visible) {
+      Future.microtask(() {
+        if (!visible && lastIndex != null) {
+          headerNotifier.value = MyHeader(visible: true, index: lastIndex);
+        } else {
+          headerNotifier.value = MyHeader(visible: visible, index: index);
+        }
+        if (visible) {
+          scrollAnimationHorizontal(index: index);
+        }
+      });
+    }
   }
-}
-
 
   void scrollToCategory(String categoryId) {
-  final key = categoryKeys[categoryId];
-  if (key != null) {
-    Scrollable.ensureVisible(
-      key.currentContext!,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
+    final key = categoryKeys[categoryId];
+    if (key != null) {
+      Scrollable.ensureVisible(
+        key.currentContext!,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
   }
-}
 }

@@ -19,6 +19,7 @@ import 'package:restaurant_app/features/pedidos/dominio/casos_uso/obtener_sugere
 import 'package:restaurant_app/features/pedidos/dominio/casos_uso/obtener_ubicacion_sucursales.dart';
 import 'package:restaurant_app/features/pedidos/dominio/casos_uso/obtener_ubicacion_tiempo_real.dart';
 import 'package:restaurant_app/features/pedidos/dominio/casos_uso/obtener_url_template.dart';
+import 'package:restaurant_app/features/pedidos/presentacion/bloc/pedido/presentacion_pedidos_bloc.dart';
 import 'package:restaurant_app/features/pedidos/presentacion/bloc/ubicacion_bloc.dart';
 import 'package:restaurant_app/features/pedidos/presentacion/bloc/ubicacion_event.dart';
 import 'firebase_options.dart';
@@ -36,6 +37,9 @@ void main() async {
 
   runApp(MultiProvider(
     providers: [
+      ChangeNotifierProvider(
+          create: (_) => PresentacionPedidosBloc(),
+        ),
       ChangeNotifierProvider(create: (context) => ThemeProvider()),
       BlocProvider(create: (context) => UbicacionBloc(
         obtenerUbicacionesSucursales: ObtenerUbicacionesSucursales(ubicacionRepositorio),
