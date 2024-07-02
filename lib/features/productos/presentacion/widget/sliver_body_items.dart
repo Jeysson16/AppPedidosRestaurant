@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:restaurant_app/features/pedidos/presentacion/provider/pedido_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:restaurant_app/features/pedidos/presentacion/bloc/pedido/presentacion_pedidos_bloc.dart';
 import 'package:restaurant_app/features/productos/dominio/entidades/producto.dart';
 import 'package:restaurant_app/features/productos/presentacion/widget/detalle_productos.dart';
 
@@ -13,7 +14,7 @@ class SliverBodyItems extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bloc = PedidosProvider.of(context)?.bloc;
+    final bloc = Provider.of<PresentacionPedidosBloc>(context, listen: false);
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (context, index) {
@@ -30,9 +31,7 @@ class SliverBodyItems extends StatelessWidget {
                     product: product,
                     imageProvider: imageProvider,
                     onProductoAgregado: () {
-                      if (bloc != null) {
-                        bloc.addProducto(product);
-                      }
+                      bloc.addProducto(product);
                     },
                   ),
                 ),
@@ -94,7 +93,7 @@ class SliverBodyItems extends StatelessWidget {
                             height: 140,
                             width: 130,
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -104,9 +103,12 @@ class SliverBodyItems extends StatelessWidget {
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
                         height: 0.5,
-                        color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.3),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .inversePrimary
+                            .withOpacity(0.3),
                       ),
-                    )
+                    ),
                   ]
                 ],
               ),

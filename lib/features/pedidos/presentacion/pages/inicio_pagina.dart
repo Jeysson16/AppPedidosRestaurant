@@ -24,10 +24,11 @@ class InicioPagina extends StatefulWidget {
   State<InicioPagina> createState() => _InicioPaginaState();
 }
 
-class _InicioPaginaState extends State<InicioPagina> with SingleTickerProviderStateMixin {
+class _InicioPaginaState extends State<InicioPagina>
+    with SingleTickerProviderStateMixin {
   final ValueNotifier<bool> _showAppBar = ValueNotifier(true);
   late SliverScrollController _sliverScrollController;
-late PresentacionPedidosBloc bloc;
+  late PresentacionPedidosBloc bloc;
   late AnimationController _animationController;
   late Animation<double> _animation;
   double _currentHeight = carritoBarraNavegacion;
@@ -41,7 +42,8 @@ late PresentacionPedidosBloc bloc;
       CategoriaProductosRepositoryImpl(firestore: FirebaseFirestore.instance),
       BannerRepositorioImpl(firestore: FirebaseFirestore.instance),
     );
-    _sliverScrollController.scrollControllerGlobally.addListener(_scrollListener);
+    _sliverScrollController.scrollControllerGlobally
+        .addListener(_scrollListener);
 
     _animationController = AnimationController(
       vsync: this,
@@ -56,25 +58,40 @@ late PresentacionPedidosBloc bloc;
       begin: carritoBarraNavegacion,
       end: MediaQuery.of(context).size.height * expandedHeight,
     ).animate(_animationController);
-bloc = Provider.of<PresentacionPedidosBloc>(context, listen: false); // Inicializa el bloc aquí
+    bloc = Provider.of<PresentacionPedidosBloc>(context, listen: false);
+
+    // Añadir listener para el carrito
+    bloc.addListener(_onCartChanged);
+  }
+
+  void _onCartChanged() {
+    setState(() {}); // Actualizar la interfaz cuando cambia el carrito
   }
 
   @override
   void dispose() {
-    _sliverScrollController.scrollControllerGlobally.removeListener(_scrollListener);
+    _sliverScrollController.scrollControllerGlobally
+        .removeListener(_scrollListener);
     _sliverScrollController.dispose();
     _showAppBar.dispose();
     _animationController.dispose();
+    bloc.removeListener(_onCartChanged);
     super.dispose();
   }
 
   void _scrollListener() {
-    if (_sliverScrollController.scrollControllerGlobally.position.userScrollDirection == ScrollDirection.reverse) {
+    if (_sliverScrollController
+            .scrollControllerGlobally.position.userScrollDirection ==
+        ScrollDirection.reverse) {
       if (_showAppBar.value) {
         _showAppBar.value = false;
       }
-    } else if (_sliverScrollController.scrollControllerGlobally.position.userScrollDirection == ScrollDirection.forward) {
-      if (!_showAppBar.value && _sliverScrollController.scrollControllerGlobally.position.pixels <= 0) {
+    } else if (_sliverScrollController
+            .scrollControllerGlobally.position.userScrollDirection ==
+        ScrollDirection.forward) {
+      if (!_showAppBar.value &&
+          _sliverScrollController.scrollControllerGlobally.position.pixels <=
+              0) {
         _showAppBar.value = true;
       }
     }
@@ -83,10 +100,10 @@ bloc = Provider.of<PresentacionPedidosBloc>(context, listen: false); // Iniciali
   void movimientoVerticalCarrito(DragUpdateDetails details) {
     setState(() {
       _currentHeight -= details.primaryDelta!;
-      _currentHeight = _currentHeight.clamp(carritoBarraNavegacion, MediaQuery.of(context).size.height * expandedHeight);
+      _currentHeight = _currentHeight.clamp(carritoBarraNavegacion,
+          MediaQuery.of(context).size.height * expandedHeight);
     });
 
-    final bloc = Provider.of<PresentacionPedidosBloc>(context, listen: false);
     if (_currentHeight >= MediaQuery.of(context).size.height * 0.5) {
       bloc.changeToCart();
     } else {
@@ -95,7 +112,6 @@ bloc = Provider.of<PresentacionPedidosBloc>(context, listen: false); // Iniciali
   }
 
   void movimientoTerminado(DragEndDetails details) {
-    final bloc = Provider.of<PresentacionPedidosBloc>(context, listen: false);
     if (_currentHeight >= MediaQuery.of(context).size.height * 0.5) {
       setState(() {
         _currentHeight = targetExpandedHeight;
@@ -105,7 +121,7 @@ bloc = Provider.of<PresentacionPedidosBloc>(context, listen: false); // Iniciali
       setState(() {
         _currentHeight = targetCollapsedHeight;
       });
-      bloc.changeToNormal(); // Cambia el estado del bloc a "normal"
+      bloc.changeToNormal();
     }
   }
 
@@ -116,121 +132,135 @@ bloc = Provider.of<PresentacionPedidosBloc>(context, listen: false); // Iniciali
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => SucursalBloc(sucursalRepository)..add(LoadSucursales()),
+          create: (context) =>
+              SucursalBloc(sucursalRepository)..add(LoadSucursales()),
         ),
         BlocProvider(
-          create: (context) => ProductosBloc(CategoriaProductosRepositoryImpl(firestore: firestoreInstance)),
+          create: (context) => ProductosBloc(
+              CategoriaProductosRepositoryImpl(firestore: firestoreInstance)),
         ),
-              ],
-child: ChangeNotifierProvider(
-        create: (context) => PresentacionPedidosBloc(), // Asegúrate de que el bloc se esté creando aquí
-      child: Scaffold(
-        drawer: const MyDrawer(),
-        body: GestureDetector(
-          onVerticalDragUpdate: movimientoVerticalCarrito,
-          onVerticalDragEnd: movimientoTerminado,
-          child: Stack(
-            children: [
-              Column(
-                children: [
-                  ValueListenableBuilder<bool>(
-                    valueListenable: _showAppBar,
-                    builder: (context, value, child) {
-                      return AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        height: value ? kToolbarHeight + 10 : 0,
-                        child: value ? const AppBarPedidos() : null,
-                      );
-                    },
-                  ),
-                  Expanded(
-                    child: BlocBuilder<SucursalBloc, SucursalState>(
-                      builder: (context, sucursalState) {
-                        if (sucursalState is SucursalLoading) {
-                          return const Center(child: CircularProgressIndicator());
-                        } else if (sucursalState is SucursalLoaded) {
-                          final sucursales = sucursalState.sucursales;
-                          if (sucursales.isEmpty) {
-                            return const Center(child: Text('No hay sucursales disponibles'));
-                          }
-                          return VistaProductos(
-                            bloc: _sliverScrollController,
-                            sucursales: sucursales,
-                          );
-                        } else if (sucursalState is SucursalError) {
-                          return Center(child: Text(sucursalState.message));
-                        }
-                        return const Center(child: Text('No hay sucursales disponibles'));
+      ],
+      child: ChangeNotifierProvider(
+        create: (context) =>
+            PresentacionPedidosBloc(), // Asegúrate de que el bloc se esté creando aquí
+        child: Scaffold(
+          drawer: const MyDrawer(),
+          body: GestureDetector(
+            onVerticalDragUpdate: movimientoVerticalCarrito,
+            onVerticalDragEnd: movimientoTerminado,
+            child: Stack(
+              children: [
+                Column(
+                  children: [
+                    ValueListenableBuilder<bool>(
+                      valueListenable: _showAppBar,
+                      builder: (context, value, child) {
+                        return AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          height: value ? kToolbarHeight + 10 : 0,
+                          child: value ? const AppBarPedidos() : null,
+                        );
                       },
                     ),
-                  ),
-                ],
-              ),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                height: _currentHeight,
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20.0),
-                    topRight: Radius.circular(20.0),
-                  ),
-                  child: Container(
-                    color: Theme.of(context).colorScheme.tertiary,
-                    child: Padding(
-                      padding: const EdgeInsets.all(25.0),
-
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 300),
-                      child: Consumer<PresentacionPedidosBloc>(
-                        key: ValueKey(bloc.presentacionState),
-                        builder: (context, bloc, _) {
-                          return Row(
-                            children: [
-                              Text(
-                                _getTextForState(bloc.presentacionState),
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.inverseSurface,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
-                                ),
-                              ),
-                              Expanded(
-                                child: SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Row(
-                                    children: List.generate(
-                                      bloc.carrito.length,
-                                      (index) {
-                                        final imagenUrl = bloc.carrito[index].producto.imagenPrincipal ?? '';
-                                        print(imagenUrl); // Verificar URL
-                                        return CircleAvatar(
-                                          backgroundImage: imagenUrl.isNotEmpty 
-                                            ? NetworkImage(imagenUrl)
-                                            : null,
-                                          child: imagenUrl.isEmpty 
-                                            ? Icon(Icons.error) // Mostrar icono si no hay imagen
-                                            : null,
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              CircleAvatar(
-                                backgroundColor: Theme.of(context).colorScheme.error,
-                              )
-                            ],
-                          );
+                    Expanded(
+                      child: BlocBuilder<SucursalBloc, SucursalState>(
+                        builder: (context, sucursalState) {
+                          if (sucursalState is SucursalLoading) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          } else if (sucursalState is SucursalLoaded) {
+                            final sucursales = sucursalState.sucursales;
+                            if (sucursales.isEmpty) {
+                              return const Center(
+                                  child: Text('No hay sucursales disponibles'));
+                            }
+                            return VistaProductos(
+                              bloc: _sliverScrollController,
+                              sucursales: sucursales,
+                            );
+                          } else if (sucursalState is SucursalError) {
+                            return Center(child: Text(sucursalState.message));
+                          }
+                          return const Center(
+                              child: Text('No hay sucursales disponibles'));
                         },
                       ),
+                    ),
+                  ],
+                ),
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  height: _currentHeight,
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(20.0),
+                      topRight: Radius.circular(20.0),
+                    ),
+                    child: Container(
+                      color: Theme.of(context).colorScheme.tertiary,
+                      child: Padding(
+                        padding: const EdgeInsets.all(25.0),
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 300),
+                          child: Consumer<PresentacionPedidosBloc>(
+                            key: ValueKey(bloc.presentacionState),
+                            builder: (context, bloc, _) {
+                              return Row(
+                                children: [
+                                  Text(
+                                    _getTextForState(bloc.presentacionState),
+                                    style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .inverseSurface,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: Row(
+                                        children: List.generate(
+                                          bloc.carrito.length,
+                                          (index) {
+                                            final imagenUrl = bloc
+                                                    .carrito[index]
+                                                    .producto
+                                                    .imagenPrincipal ??
+                                                '';
+                                            print(imagenUrl); // Verificar URL
+                                            return CircleAvatar(
+                                              backgroundImage:
+                                                  imagenUrl.isNotEmpty
+                                                      ? NetworkImage(imagenUrl)
+                                                      : null,
+                                              child: imagenUrl.isEmpty
+                                                  ? const Icon(Icons
+                                                      .error) // Mostrar icono si no hay imagen
+                                                  : null,
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  CircleAvatar(
+                                    backgroundColor:
+                                        Theme.of(context).colorScheme.error,
+                                  )
+                                ],
+                              );
+                            },
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
             ),
           ),
         ),

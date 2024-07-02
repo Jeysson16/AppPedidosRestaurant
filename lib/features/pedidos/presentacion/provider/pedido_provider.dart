@@ -6,12 +6,13 @@ class PedidosProvider extends InheritedWidget {
   final Widget child;
 
   const PedidosProvider({
-    super.key, 
+    super.key,
     required this.bloc,
     required this.child,
   }) : super(child: child);
 
-  static PedidosProvider? of(BuildContext context) => context.dependOnInheritedWidgetOfExactType<PedidosProvider>();
+  static PedidosProvider? of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<PedidosProvider>();
 
   @override
   bool updateShouldNotify(InheritedWidget oldWidget) => true;
