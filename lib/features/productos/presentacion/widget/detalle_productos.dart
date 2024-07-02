@@ -3,7 +3,7 @@ import 'package:restaurant_app/app/global/view/components/my_button_rounded.dart
 import 'package:restaurant_app/features/productos/dominio/entidades/producto.dart';
 
 class ProductosDetalles extends StatefulWidget {
-  const ProductosDetalles({super.key, required this.product, required this.imageProvider,required this.onProductoAgregado});
+  const ProductosDetalles({super.key, required this.product, required this.imageProvider, required this.onProductoAgregado});
 
   final Producto product;
   final ImageProvider imageProvider;
@@ -18,7 +18,8 @@ class _ProductosDetallesState extends State<ProductosDetalles> {
   int selectedVarianteIndex = 0;
   List<bool> selectedAgregados = [];
   String heroTag = '';
-  void _agregarCarrito(BuildContext context){
+
+  void _agregarCarrito(BuildContext context) {
     setState(() {
       heroTag = 'details';
     });
@@ -129,16 +130,19 @@ class _ProductosDetallesState extends State<ProductosDetalles> {
                   if (widget.product.variantes != null && widget.product.variantes!.isNotEmpty) ...[
                     const SizedBox(height: 10),
                     ExpansionTile(
-                      title: Text('Escoge como la quieres',
+                      title: Text(
+                        'Escoge como la quieres',
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
                       initiallyExpanded: true,
-                      subtitle: Text('Selecciona como deseas tus ${widget.product.nombre}', style: TextStyle(
+                      subtitle: Text(
+                        'Selecciona como deseas tus ${widget.product.nombre}',
+                        style: TextStyle(
                           color: Theme.of(context).colorScheme.inverseSurface,
-                          fontSize: 12
-                      ),
+                          fontSize: 12,
+                        ),
                       ),
                       collapsedIconColor: Theme.of(context).colorScheme.primary,
                       leading: Icon(Icons.food_bank_outlined, color: Theme.of(context).colorScheme.primary),
@@ -181,9 +185,12 @@ class _ProductosDetallesState extends State<ProductosDetalles> {
                       runSpacing: 4.0,
                       children: List.generate(widget.product.agregados!.length, (index) {
                         String agregadoNombre = widget.product.agregados![index].nombre;
+                        double precio = widget.product.agregados![index].precio;
+                        if (selectedAgregados[index]) {
+                          agregadoNombre += ' (${precio.toStringAsFixed(2)})';
+                        }
                         return FilterChip(
-                          avatar: const CircleAvatar(
-                          ),
+                          avatar: const CircleAvatar(),
                           label: Text(
                             agregadoNombre,
                             style: TextStyle(
@@ -198,58 +205,54 @@ class _ProductosDetallesState extends State<ProductosDetalles> {
                             });
                           },
                           selectedColor: Theme.of(context).colorScheme.primary,
-                          backgroundColor: selectedAgregados[index] ? Theme.of(context).colorScheme.primary.withOpacity(0.1) : null, // Cambia el color de fondo cuando está seleccionado
-                          tooltip: 'Agrega $agregadoNombre por un costo adicional', // Agrega un tooltip informativo
+                          backgroundColor: selectedAgregados[index] ? Theme.of(context).colorScheme.primary.withOpacity(0.1) : null,
+                          tooltip: 'Agrega $agregadoNombre por un costo adicional de ${precio.toStringAsFixed(2)}',
                         );
                       }),
                     ),
                   ],
-                  const SizedBox(height: 80), // Añade un espacio para evitar que el contenido quede detrás del botón fijo
-                ],
-              ),
-            ),
-          ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Container(
-              color: Theme.of(context).colorScheme.surface,
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: IconButton(
-                        onPressed: () => null,
-                        icon: Icon(
-                          Icons.favorite_border,
-                          color: Theme.of(context).colorScheme.inverseSurface,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 4,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: MyButtonRounded(
-                        onTap: () => _agregarCarrito(context),
-                        text: "Agregar al carrito",
-                        icono: Icon(
-                          Icons.add_shopping_cart_outlined,
-                          color: Theme.of(context).colorScheme.surface,
-                        ),
-                      ),
-                    ),
-                  ),
+                  const SizedBox(height: 80),
                 ],
               ),
             ),
           ),
         ],
+      ),
+      bottomNavigationBar: Container(
+        height: 80,
+        color: Theme.of(context).colorScheme.surface,
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Row(
+          children: [
+            Expanded(
+              flex: 1,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.favorite_border,
+                    color: Theme.of(context).colorScheme.inverseSurface,
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 4,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: MyButtonRounded(
+                  onTap: () => _agregarCarrito(context),
+                  text: "Agregar al carrito",
+                  icono: const Icon(
+                    Icons.add_shopping_cart_outlined,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

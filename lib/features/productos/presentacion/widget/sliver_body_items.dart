@@ -5,9 +5,9 @@ import 'package:restaurant_app/features/productos/presentacion/widget/detalle_pr
 
 class SliverBodyItems extends StatelessWidget {
   const SliverBodyItems({
-    Key? key,
+    super.key,
     required this.listItem,
-  }) : super(key: key);
+  });
 
   final List<Producto> listItem;
 
@@ -29,7 +29,11 @@ class SliverBodyItems extends StatelessWidget {
                   builder: (context) => ProductosDetalles(
                     product: product,
                     imageProvider: imageProvider,
-                    onProductoAgregado: bloc?.addProducto(product),
+                    onProductoAgregado: () {
+                      if (bloc != null) {
+                        bloc.addProducto(product);
+                      }
+                    },
                   ),
                 ),
               );

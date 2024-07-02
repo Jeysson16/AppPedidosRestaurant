@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:restaurant_app/app/global/view/components/my_drawer.dart';
 import 'package:restaurant_app/features/mesa/data/repositorios/firebase_sucursal_repositorio.dart';
@@ -28,7 +27,7 @@ class InicioPagina extends StatefulWidget {
 class _InicioPaginaState extends State<InicioPagina> with SingleTickerProviderStateMixin {
   final ValueNotifier<bool> _showAppBar = ValueNotifier(true);
   late SliverScrollController _sliverScrollController;
-  late PresentacionPedidosBloc bloc;
+late PresentacionPedidosBloc bloc;
   late AnimationController _animationController;
   late Animation<double> _animation;
   double _currentHeight = carritoBarraNavegacion;
@@ -46,7 +45,7 @@ class _InicioPaginaState extends State<InicioPagina> with SingleTickerProviderSt
 
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 300),
     );
   }
 
@@ -57,7 +56,7 @@ class _InicioPaginaState extends State<InicioPagina> with SingleTickerProviderSt
       begin: carritoBarraNavegacion,
       end: MediaQuery.of(context).size.height * expandedHeight,
     ).animate(_animationController);
-    bloc = Provider.of<PresentacionPedidosBloc>(context, listen: false); // Inicializa el bloc aquí
+bloc = Provider.of<PresentacionPedidosBloc>(context, listen: false); // Inicializa el bloc aquí
   }
 
   @override
@@ -86,14 +85,22 @@ class _InicioPaginaState extends State<InicioPagina> with SingleTickerProviderSt
       _currentHeight -= details.primaryDelta!;
       _currentHeight = _currentHeight.clamp(carritoBarraNavegacion, MediaQuery.of(context).size.height * expandedHeight);
     });
+
+    final bloc = Provider.of<PresentacionPedidosBloc>(context, listen: false);
+    if (_currentHeight >= MediaQuery.of(context).size.height * 0.5) {
+      bloc.changeToCart();
+    } else {
+      bloc.changeToDetails();
+    }
   }
 
   void movimientoTerminado(DragEndDetails details) {
+    final bloc = Provider.of<PresentacionPedidosBloc>(context, listen: false);
     if (_currentHeight >= MediaQuery.of(context).size.height * 0.5) {
       setState(() {
         _currentHeight = targetExpandedHeight;
       });
-      bloc.changeToCart(); // Cambia el estado del bloc a "cart"
+      bloc.changeToCart();
     } else {
       setState(() {
         _currentHeight = targetCollapsedHeight;
@@ -106,7 +113,6 @@ class _InicioPaginaState extends State<InicioPagina> with SingleTickerProviderSt
   Widget build(BuildContext context) {
     final firestoreInstance = FirebaseFirestore.instance;
     final sucursalRepository = SucursalRepositoryImpl(firestoreInstance);
-
     return MultiBlocProvider(
       providers: [
         BlocProvider(
@@ -115,107 +121,116 @@ class _InicioPaginaState extends State<InicioPagina> with SingleTickerProviderSt
         BlocProvider(
           create: (context) => ProductosBloc(CategoriaProductosRepositoryImpl(firestore: firestoreInstance)),
         ),
-      ],
-      child: ChangeNotifierProvider(
+              ],
+child: ChangeNotifierProvider(
         create: (context) => PresentacionPedidosBloc(), // Asegúrate de que el bloc se esté creando aquí
-        child: Scaffold(
-          drawer: const MyDrawer(),
-          body: GestureDetector(
-            onVerticalDragUpdate: movimientoVerticalCarrito,
-            onVerticalDragEnd: movimientoTerminado,
-            child: Stack(
-              children: [
-                Column(
-                  children: [
-                    ValueListenableBuilder<bool>(
-                      valueListenable: _showAppBar,
-                      builder: (context, value, child) {
-                        return AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          height: value ? kToolbarHeight + 10 : 0,
-                          child: value ? const AppBarPedidos() : null,
-                        );
+      child: Scaffold(
+        drawer: const MyDrawer(),
+        body: GestureDetector(
+          onVerticalDragUpdate: movimientoVerticalCarrito,
+          onVerticalDragEnd: movimientoTerminado,
+          child: Stack(
+            children: [
+              Column(
+                children: [
+                  ValueListenableBuilder<bool>(
+                    valueListenable: _showAppBar,
+                    builder: (context, value, child) {
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        height: value ? kToolbarHeight + 10 : 0,
+                        child: value ? const AppBarPedidos() : null,
+                      );
+                    },
+                  ),
+                  Expanded(
+                    child: BlocBuilder<SucursalBloc, SucursalState>(
+                      builder: (context, sucursalState) {
+                        if (sucursalState is SucursalLoading) {
+                          return const Center(child: CircularProgressIndicator());
+                        } else if (sucursalState is SucursalLoaded) {
+                          final sucursales = sucursalState.sucursales;
+                          if (sucursales.isEmpty) {
+                            return const Center(child: Text('No hay sucursales disponibles'));
+                          }
+                          return VistaProductos(
+                            bloc: _sliverScrollController,
+                            sucursales: sucursales,
+                          );
+                        } else if (sucursalState is SucursalError) {
+                          return Center(child: Text(sucursalState.message));
+                        }
+                        return const Center(child: Text('No hay sucursales disponibles'));
                       },
                     ),
-                    Expanded(
-                      child: BlocBuilder<SucursalBloc, SucursalState>(
-                        builder: (context, sucursalState) {
-                          if (sucursalState is SucursalLoading) {
-                            return const Center(child: CircularProgressIndicator());
-                          } else if (sucursalState is SucursalLoaded) {
-                            final sucursales = sucursalState.sucursales;
-                            if (sucursales.isEmpty) {
-                              return const Center(child: Text('No hay sucursales disponibles'));
-                            }
-                            return VistaProductos(
-                              bloc: _sliverScrollController,
-                              sucursales: sucursales,
-                            );
-                          } else if (sucursalState is SucursalError) {
-                            return Center(child: Text(sucursalState.message));
-                          }
-                          return const Center(child: Text('No hay sucursales disponibles'));
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  height: _currentHeight,
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(20.0),
-                      topRight: Radius.circular(20.0),
-                    ),
-                    child: Container(
-                      color: Theme.of(context).colorScheme.inverseSurface,
-                      child: Padding(
-                        padding: const EdgeInsets.all(25.0),
+                  ),
+                ],
+              ),
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                height: _currentHeight,
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20.0),
+                    topRight: Radius.circular(20.0),
+                  ),
+                  child: Container(
+                    color: Theme.of(context).colorScheme.tertiary,
+                    child: Padding(
+                      padding: const EdgeInsets.all(25.0),
 
                         child: AnimatedSwitcher(
                           duration: const Duration(milliseconds: 300),
-                          child: Consumer<PresentacionPedidosBloc>(
-                            key: ValueKey(bloc.presentacionState),
-                            builder: (context, bloc, _) {
-                              return Row(
-                                children: [
-                                  Text(
-                                    _getTextForState(bloc.presentacionState),
-                                    style: TextStyle(
-                                      color: Theme.of(context).colorScheme.tertiary,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20,
+                      child: Consumer<PresentacionPedidosBloc>(
+                        key: ValueKey(bloc.presentacionState),
+                        builder: (context, bloc, _) {
+                          return Row(
+                            children: [
+                              Text(
+                                _getTextForState(bloc.presentacionState),
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.inverseSurface,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                ),
+                              ),
+                              Expanded(
+                                child: SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    children: List.generate(
+                                      bloc.carrito.length,
+                                      (index) {
+                                        final imagenUrl = bloc.carrito[index].producto.imagenPrincipal ?? '';
+                                        print(imagenUrl); // Verificar URL
+                                        return CircleAvatar(
+                                          backgroundImage: imagenUrl.isNotEmpty 
+                                            ? NetworkImage(imagenUrl)
+                                            : null,
+                                          child: imagenUrl.isEmpty 
+                                            ? Icon(Icons.error) // Mostrar icono si no hay imagen
+                                            : null,
+                                        );
+                                      },
                                     ),
                                   ),
-                                  Expanded(
-                                    child: SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: Row(
-                                        children: 
-                                          List.generate(bloc.carrito.length, (index) => CircleAvatar(
-                                          backgroundImage: NetworkImage(
-                                            bloc.carrito[index].producto.imagenPrincipal ?? ''
-                                            
-                                            )
-                                          )
-                                        )
-                                      ),
-                                    ),
-                                  ),
-                                  CircleAvatar(backgroundColor: Theme.of(context).colorScheme.error, )
-                                ],
-                              );
-                            },
-                          ),
-                        ),
+                                ),
+                              ),
+                              CircleAvatar(
+                                backgroundColor: Theme.of(context).colorScheme.error,
+                              )
+                            ],
+                          );
+                        },
+                      ),
                       ),
                     ),
                   ),
                 ),
-              ],
+              ),
+            ],
             ),
           ),
         ),

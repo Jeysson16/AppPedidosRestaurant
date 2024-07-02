@@ -37,9 +37,7 @@ void main() async {
 
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider(
-          create: (_) => PresentacionPedidosBloc(),
-        ),
+      ChangeNotifierProvider(create: (context) => PresentacionPedidosBloc()),
       ChangeNotifierProvider(create: (context) => ThemeProvider()),
       BlocProvider(create: (context) => UbicacionBloc(
         obtenerUbicacionesSucursales: ObtenerUbicacionesSucursales(ubicacionRepositorio),
@@ -52,7 +50,8 @@ void main() async {
         calcularCobro: CalcularCobro(ubicacionRepositorio),
         establecerModoTema: EstablecerModoTema(ubicacionRepositorio),
         obtenerModoTema: ObtenerModoTema(ubicacionRepositorio),
-        obtenerUrlTemplate: ObtenerUrlTemplate(ubicacionRepositorio), obtenerSugerencias: ObtenerSugerenciasUbicacion(ubicacionRepositorio),
+        obtenerUrlTemplate: ObtenerUrlTemplate(ubicacionRepositorio), 
+        obtenerSugerencias: ObtenerSugerenciasUbicacion(ubicacionRepositorio),
       )..add(ObtenerModoTemaEvent())),
     ],
     child: const MyApp(),

@@ -26,7 +26,7 @@ class PresentacionPedidosBloc with ChangeNotifier {
 
   addProducto(Producto producto){
     carrito.add(PedidoSeleccionadoItem(cantidad: 1, observacion: '', producto: producto));
-    notifyListeners();
+        notifyListeners();
   }
 
 }
@@ -35,13 +35,13 @@ class PedidoSeleccionadoItem {
   int cantidad;
   String observacion;
   final Producto producto;
-
+  
   PedidoSeleccionadoItem({
     required this.cantidad,
     required this.observacion,
     required this.producto,
-  });
-  
+      });
+
   void add(){
 
   }
