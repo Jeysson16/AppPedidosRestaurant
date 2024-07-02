@@ -26,14 +26,20 @@ class SliverBodyItems extends StatelessWidget {
           return GestureDetector(
             onTap: () {
               Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => ProductosDetalles(
-                    product: product,
-                    imageProvider: imageProvider,
-                    onProductoAgregado: () {
-                      bloc.addProducto(product);
-                    },
-                  ),
+                PageRouteBuilder(
+                  transitionDuration: const Duration(milliseconds: 700),
+                  pageBuilder: (context, animation, secondaryAnimation) {
+                    return FadeTransition(
+                      opacity: animation,
+                      child: ProductosDetalles(
+                        product: product,
+                        imageProvider: imageProvider,
+                        onProductoAgregado: () {
+                          bloc.addProducto(product);
+                        },
+                      ),
+                    );
+                  },
                 ),
               );
             },
@@ -93,7 +99,7 @@ class SliverBodyItems extends StatelessWidget {
                             height: 140,
                             width: 130,
                           ),
-                        ),
+                        )
                       ],
                     ),
                   ),

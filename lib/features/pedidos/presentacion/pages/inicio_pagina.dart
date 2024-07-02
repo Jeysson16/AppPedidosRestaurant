@@ -8,6 +8,7 @@ import 'package:restaurant_app/features/mesa/data/repositorios/firebase_sucursal
 import 'package:restaurant_app/features/mesa/presentacion/bloc/sucursal_bloc.dart';
 import 'package:restaurant_app/features/pedidos/presentacion/bloc/pedido/presentacion_pedidos_bloc.dart';
 import 'package:restaurant_app/features/pedidos/presentacion/components/mi_app_bar.dart';
+import 'package:restaurant_app/features/pedidos/presentacion/components/mi_carrito.dart';
 import 'package:restaurant_app/features/productos/data/repositorio/firebase_banner_repositorio.dart';
 import 'package:restaurant_app/features/productos/data/repositorio/firebase_categoria_repositorio.dart';
 import 'package:restaurant_app/features/productos/presentacion/bloc/categoria/categoria_producto_bloc.dart';
@@ -141,8 +142,7 @@ class _InicioPaginaState extends State<InicioPagina>
         ),
       ],
       child: ChangeNotifierProvider(
-        create: (context) =>
-            PresentacionPedidosBloc(), // Asegúrate de que el bloc se esté creando aquí
+        create: (context) => PresentacionPedidosBloc(),
         child: Scaffold(
           drawer: const MyDrawer(),
           body: GestureDetector(
@@ -207,51 +207,79 @@ class _InicioPaginaState extends State<InicioPagina>
                           child: Consumer<PresentacionPedidosBloc>(
                             key: ValueKey(bloc.presentacionState),
                             builder: (context, bloc, _) {
-                              return Row(
-                                children: [
-                                  Text(
-                                    _getTextForState(bloc.presentacionState),
-                                    style: TextStyle(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .inverseSurface,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: Row(
-                                        children: List.generate(
-                                          bloc.carrito.length,
-                                          (index) {
-                                            final imagenUrl = bloc
-                                                    .carrito[index]
-                                                    .producto
-                                                    .imagenPrincipal ??
-                                                '';
-                                            print(imagenUrl); // Verificar URL
-                                            return CircleAvatar(
-                                              backgroundImage:
-                                                  imagenUrl.isNotEmpty
-                                                      ? NetworkImage(imagenUrl)
-                                                      : null,
-                                              child: imagenUrl.isEmpty
-                                                  ? const Icon(Icons
-                                                      .error) // Mostrar icono si no hay imagen
-                                                  : null,
-                                            );
-                                          },
-                                        ),
+                              return AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 400),
+                                child: _currentHeight >=
+                                        MediaQuery.of(context).size.height * 0.2
+                                    ? const VistaCarrito()
+                                    : Row(
+                                        children: [
+                                          const Text(
+                                            'Carrito',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 20,
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child:
+                                                bloc.presentacionState ==
+                                                        PresentacionPedidoState
+                                                            .cart
+                                                    ? const SizedBox.shrink()
+                                                    : SingleChildScrollView(
+                                                        scrollDirection:
+                                                            Axis.horizontal,
+                                                        child: Row(
+                                                          children:
+                                                              List.generate(
+                                                                  bloc.carrito
+                                                                      .length,
+                                                                  (index) =>
+                                                                      Padding(
+                                                                        padding: const EdgeInsets
+                                                                            .symmetric(
+                                                                            horizontal:
+                                                                                8.0),
+                                                                        child:
+                                                                            Stack(
+                                                                          children: [
+                                                                            Hero(
+                                                                              tag: 'list_${bloc.carrito[index].producto.id}_details',
+                                                                              child: CircleAvatar(
+                                                                                backgroundImage: NetworkImage(bloc.carrito[index].producto.imagenPrincipal ?? ''),
+                                                                              ),
+                                                                            ),
+                                                                            Positioned(
+                                                                              right: 0,
+                                                                              child: CircleAvatar(
+                                                                                radius: 10,
+                                                                                backgroundColor: Theme.of(context).colorScheme.primary,
+                                                                                child: Text(
+                                                                                  '${bloc.carrito[index].cantidad}',
+                                                                                  style: const TextStyle(color: Colors.white),
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      )),
+                                                        ),
+                                                      ),
+                                          ),
+                                          CircleAvatar(
+                                            backgroundColor: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                            child: Text(
+                                              '${bloc.totalCarritoElementos()}',
+                                              style: const TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                          )
+                                        ],
                                       ),
-                                    ),
-                                  ),
-                                  CircleAvatar(
-                                    backgroundColor:
-                                        Theme.of(context).colorScheme.error,
-                                  )
-                                ],
                               );
                             },
                           ),
@@ -266,18 +294,5 @@ class _InicioPaginaState extends State<InicioPagina>
         ),
       ),
     );
-  }
-
-  String _getTextForState(PresentacionPedidoState state) {
-    switch (state) {
-      case PresentacionPedidoState.normal:
-        return 'Carrito';
-      case PresentacionPedidoState.details:
-        return 'Detalles';
-      case PresentacionPedidoState.cart:
-        return 'Detalles del Carrito';
-      default:
-        return 'Carrito';
-    }
   }
 }

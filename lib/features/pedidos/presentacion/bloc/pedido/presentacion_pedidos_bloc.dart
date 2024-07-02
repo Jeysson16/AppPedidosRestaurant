@@ -27,10 +27,20 @@ class PresentacionPedidosBloc with ChangeNotifier {
   }
 
   void addProducto(Producto producto) {
+    for (PedidoSeleccionadoItem item in carrito) {
+      if (item.producto.id == producto.id) {
+        item.add();
+        notifyListeners();
+        return;
+      }
+    }
     carrito.add(PedidoSeleccionadoItem(
         cantidad: 1, observacion: '', producto: producto));
     notifyListeners();
   }
+
+  int totalCarritoElementos() => carrito.fold<int>(
+      0, (previousValue, element) => previousValue + element.cantidad);
 }
 
 class PedidoSeleccionadoItem {
