@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class PedidoOptionsScreen extends StatelessWidget {
@@ -6,51 +7,73 @@ class PedidoOptionsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Opciones de Pedido'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            OptionButton(
-              imagePath: 'assets/pide_qr.png',
-              label: 'Pídelo en tu mesa',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const PedidoMesaScreen()),
-                );
-              },
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              'assets/background.png',
+              fit: BoxFit.cover,
             ),
-            const SizedBox(height: 20),
-            OptionButton(
-              imagePath: 'assets/pide_delivery.png',
-              label: 'Pídelo por delivery',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const PedidoDeliveryScreen()),
-                );
-              },
+          ),
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+              child: Container(
+                color: Colors.black.withOpacity(0.1),
+              ),
             ),
-            const SizedBox(height: 20),
-            OptionButton(
-              imagePath: 'assets/pide_reserva.png',
-              label: 'Seleccionar como reserva',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const PedidoReservaScreen()),
-                );
-              },
+          ),
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 20),
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 20,
+                  runSpacing: 20,
+                  children: [
+                    OptionButton(
+                      imagePath: 'assets/pide_qr.png',
+                      label: 'Pídelo en tu mesa',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const PedidoMesaScreen()),
+                        );
+                      },
+                    ),
+                    OptionButton(
+                      imagePath: 'assets/pide_delivery.png',
+                      label: 'Pídelo por delivery',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const PedidoDeliveryScreen()),
+                        );
+                      },
+                    ),
+                    OptionButton(
+                      imagePath: 'assets/pide_reserva.png',
+                      label: 'Seleccionar como reserva',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const PedidoReservaScreen()),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -72,37 +95,35 @@ class OptionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 16.0),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12.0),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 10.0,
-              offset: Offset(0, 5),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.black54,
+              borderRadius: BorderRadius.circular(50),
             ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Image.asset(
-              imagePath,
-              width: 60,
-              height: 60,
+            child: CircleAvatar(
+              radius: 50,
+              backgroundImage: AssetImage(imagePath),
             ),
-            Text(
+          ),
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+            decoration: BoxDecoration(
+              color: Colors.black54,
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: Text(
               label,
               style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                fontSize: 14,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
