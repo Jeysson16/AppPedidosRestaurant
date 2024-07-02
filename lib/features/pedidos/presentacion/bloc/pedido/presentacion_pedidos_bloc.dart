@@ -39,6 +39,11 @@ class PresentacionPedidosBloc with ChangeNotifier {
     notifyListeners();
   }
 
+  void eliminarItem(Producto producto) {
+    carrito.removeWhere((item) => item.producto.id == producto.id);
+    notifyListeners();
+  }
+
   int totalCarritoElementos() => carrito.fold<int>(
       0, (previousValue, element) => previousValue + element.cantidad);
 }

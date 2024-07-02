@@ -27,7 +27,7 @@ class SliverBodyItems extends StatelessWidget {
             onTap: () {
               Navigator.of(context).push(
                 PageRouteBuilder(
-                  transitionDuration: const Duration(milliseconds: 700),
+                  transitionDuration: const Duration(milliseconds: 300),
                   pageBuilder: (context, animation, secondaryAnimation) {
                     return FadeTransition(
                       opacity: animation,

@@ -16,8 +16,9 @@ class ProductosDetalles extends StatefulWidget {
 class _ProductosDetallesState extends State<ProductosDetalles> {
   int selectedSizeIndex = 0;
   int selectedVarianteIndex = 0;
-  List<bool> selectedAgregados = [];
+  List<int> selectedAgregados = [];
   String heroTag = '';
+  int cantidad = 1;
 
   void _agregarCarrito(BuildContext context) {
     setState(() {
@@ -31,8 +32,26 @@ class _ProductosDetallesState extends State<ProductosDetalles> {
   void initState() {
     super.initState();
     if (widget.product.agregados != null) {
-      selectedAgregados = List<bool>.filled(widget.product.agregados!.length, false);
+      selectedAgregados = List<int>.filled(widget.product.agregados!.length, 0);
     }
+  }
+
+  double calcularPrecioTotal() {
+    double total = widget.product.precio * cantidad;
+
+    if (widget.product.variantes != null && widget.product.variantes!.isNotEmpty) {
+      total += widget.product.variantes![selectedVarianteIndex].precio * cantidad;
+    }
+
+    if (widget.product.tamanos != null && widget.product.tamanos!.isNotEmpty) {
+      total += widget.product.tamanos![selectedSizeIndex].precio * cantidad;
+    }
+
+    for (int i = 0; i < selectedAgregados.length; i++) {
+      total += widget.product.agregados![i].precio * selectedAgregados[i];
+    }
+
+    return total;
   }
 
   @override
@@ -73,9 +92,34 @@ class _ProductosDetallesState extends State<ProductosDetalles> {
                   const SizedBox(height: 10),
                   Row(
                     children: [
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            if (cantidad > 1) cantidad--;
+                          });
+                        },
+                        icon: Icon(Icons.remove, color: Theme.of(context).colorScheme.primary),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        cantidad.toString(),
+                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                      const SizedBox(width: 10),
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            cantidad++;
+                          });
+                        },
+                        icon: Icon(Icons.add, color: Theme.of(context).colorScheme.primary),
+                      ),
                       const Spacer(),
                       Text(
-                        'S/. ${widget.product.precio.toStringAsFixed(2)}',
+                        'S/. ${calcularPrecioTotal().toStringAsFixed(2)}',
                         style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                               color: Theme.of(context).colorScheme.primary,
                               fontWeight: FontWeight.bold,
@@ -172,7 +216,7 @@ class _ProductosDetallesState extends State<ProductosDetalles> {
                   const SizedBox(height: 10),
                   if (widget.product.agregados != null && widget.product.agregados!.isNotEmpty) ...[
                     Text(
-                      'Agregale a tu ${widget.product.nombre}',
+                      'Agrega la porcion que deseas ${widget.product.nombre}',
                       style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                             color: Theme.of(context).colorScheme.inverseSurface,
                             fontWeight: FontWeight.bold,
@@ -186,27 +230,69 @@ class _ProductosDetallesState extends State<ProductosDetalles> {
                       children: List.generate(widget.product.agregados!.length, (index) {
                         String agregadoNombre = widget.product.agregados![index].nombre;
                         double precio = widget.product.agregados![index].precio;
-                        if (selectedAgregados[index]) {
-                          agregadoNombre += ' (${precio.toStringAsFixed(2)})';
-                        }
-                        return FilterChip(
-                          avatar: const CircleAvatar(),
-                          label: Text(
-                            agregadoNombre,
-                            style: TextStyle(
-                              color: selectedAgregados[index] ? Theme.of(context).colorScheme.surface : Theme.of(context).colorScheme.inverseSurface,
-                              fontWeight: selectedAgregados[index] ? FontWeight.bold : FontWeight.normal,
+                        return Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: selectedAgregados[index] > 0
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).colorScheme.inverseSurface,
+                            ),
+                            borderRadius: BorderRadius.circular(20),
+                            color: selectedAgregados[index] > 0
+                                ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
+                                : null,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      if (selectedAgregados[index] > 0) selectedAgregados[index]--;
+                                    });
+                                  },
+                                  icon: Icon(Icons.remove, color: Theme.of(context).colorScheme.primary),
+                                ),
+                                Text(
+                                  '${selectedAgregados[index]}',
+                                  style: TextStyle(
+                                    color: selectedAgregados[index] > 0
+                                        ? Theme.of(context).colorScheme.primary
+                                        : Theme.of(context).colorScheme.inverseSurface,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      selectedAgregados[index]++;
+                                    });
+                                  },
+                                  icon: Icon(Icons.add, color: Theme.of(context).colorScheme.primary),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  agregadoNombre,
+                                  style: TextStyle(
+                                    color: selectedAgregados[index] > 0
+                                        ? Theme.of(context).colorScheme.primary
+                                        : Theme.of(context).colorScheme.inverseSurface,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                if (selectedAgregados[index] > 0)
+                                  Text(
+                                    ' (${(precio * selectedAgregados[index]).toStringAsFixed(2)})',
+                                    style: TextStyle(
+                                      color: Theme.of(context).colorScheme.primary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                              ],
                             ),
                           ),
-                          selected: selectedAgregados[index],
-                          onSelected: (bool selected) {
-                            setState(() {
-                              selectedAgregados[index] = selected;
-                            });
-                          },
-                          selectedColor: Theme.of(context).colorScheme.primary,
-                          backgroundColor: selectedAgregados[index] ? Theme.of(context).colorScheme.primary.withOpacity(0.1) : null,
-                          tooltip: 'Agrega $agregadoNombre por un costo adicional de ${precio.toStringAsFixed(2)}',
                         );
                       }),
                     ),

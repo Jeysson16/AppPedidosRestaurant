@@ -268,18 +268,27 @@ class _InicioPaginaState extends State<InicioPagina>
                                                         ),
                                                       ),
                                           ),
-                                          CircleAvatar(
-                                            backgroundColor: Theme.of(context)
-                                                .colorScheme
-                                                .primary,
-                                            child: Text(
-                                              '${bloc.totalCarritoElementos()}',
-                                              style: const TextStyle(
-                                                  color: Colors.white),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                            decoration: BoxDecoration(
+                                              color: Theme.of(context).colorScheme.primary,
+                                              borderRadius: BorderRadius.circular(20),
                                             ),
-                                          )
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                  'S/. ${bloc.carrito.fold<double>(0.0, (total, item) => total + item.producto.precio * item.cantidad).toStringAsFixed(2)}',
+                                                  style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 20
+                                            ),
+                                          ),
                                         ],
                                       ),
+                                    ),
+                                  ],
+                                ),
                               );
                             },
                           ),
