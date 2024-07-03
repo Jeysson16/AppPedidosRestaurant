@@ -138,7 +138,7 @@ class PedidoMesaScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Pídelo en tu mesa'),
       ),
-      body: Center(
+      body: const Center(
         child: Text(
             'Aquí se puede implementar la funcionalidad de escanear el código QR de la mesa.'),
       ),
@@ -155,7 +155,7 @@ class PedidoDeliveryScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Pídelo por delivery'),
       ),
-      body: Center(
+      body: const Center(
         child: Text(
             'Aquí se puede implementar la funcionalidad de seleccionar ubicación para delivery.'),
       ),
@@ -172,7 +172,7 @@ class PedidoReservaScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Seleccionar como reserva'),
       ),
-      body: Center(
+      body: const Center(
         child: Text(
             'Aquí se puede implementar la funcionalidad de realizar una reserva.'),
       ),

@@ -31,6 +31,7 @@ class _InicioPaginaState extends State<InicioPagina>
   late SliverScrollController _sliverScrollController;
   late PresentacionPedidosBloc bloc;
   late AnimationController _animationController;
+  // ignore: unused_field
   late Animation<double> _animation;
   double _currentHeight = carritoBarraNavegacion;
   final double targetExpandedHeight = 500.0;
