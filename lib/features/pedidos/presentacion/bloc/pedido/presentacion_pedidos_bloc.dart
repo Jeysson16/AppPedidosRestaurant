@@ -26,16 +26,32 @@ class PresentacionPedidosBloc with ChangeNotifier {
     notifyListeners();
   }
 
-  void addProducto(Producto producto) {
+  void addProducto({
+    required Producto producto,
+    required int cantidad,
+    required String observacion,
+    required int selectedSizeIndex,
+    required int selectedVarianteIndex,
+    required List<int> selectedAgregados,
+  }) {
     for (PedidoSeleccionadoItem item in carrito) {
-      if (item.producto.id == producto.id) {
-        item.add();
+      if (item.producto.id == producto.id &&
+          item.selectedSizeIndex == selectedSizeIndex &&
+          item.selectedVarianteIndex == selectedVarianteIndex &&
+          _areAgregadosEqual(item.selectedAgregados, selectedAgregados)) {
+        item.add(cantidad);
         notifyListeners();
         return;
       }
     }
     carrito.add(PedidoSeleccionadoItem(
-        cantidad: 1, observacion: '', producto: producto));
+      cantidad: cantidad,
+      observacion: observacion,
+      producto: producto,
+      selectedSizeIndex: selectedSizeIndex,
+      selectedVarianteIndex: selectedVarianteIndex,
+      selectedAgregados: selectedAgregados,
+    ));
     notifyListeners();
   }
 
@@ -46,24 +62,63 @@ class PresentacionPedidosBloc with ChangeNotifier {
 
   int totalCarritoElementos() => carrito.fold<int>(
       0, (previousValue, element) => previousValue + element.cantidad);
+
+  double totalCarritoPrecio() => carrito.fold<double>(
+      0.0, (previousValue, element) => previousValue + element.calcularPrecioTotal());
+
+  bool _areAgregadosEqual(List<int> a, List<int> b) {
+    if (a.length != b.length) return false;
+    for (int i = 0; i < a.length; i++) {
+      if (a[i] != b[i]) return false;
+    }
+    return true;
+  }
 }
 
 class PedidoSeleccionadoItem {
   int cantidad;
   String observacion;
   final Producto producto;
+  final int selectedSizeIndex;
+  final int selectedVarianteIndex;
+  final List<int> selectedAgregados;
 
   PedidoSeleccionadoItem({
     required this.cantidad,
     required this.observacion,
     required this.producto,
+    required this.selectedSizeIndex,
+    required this.selectedVarianteIndex,
+    required this.selectedAgregados,
   });
 
-  void add() {
-    cantidad++;
+  void add(int amount) {
+    cantidad += amount;
   }
 
-  void subtract() {
-    if (cantidad > 1) cantidad--;
+  void subtract(int amount) {
+    if (cantidad > amount) {
+      cantidad -= amount;
+    } else {
+      cantidad = 0;
+    }
+  }
+
+  double calcularPrecioTotal() {
+    double total = producto.precio * cantidad;
+
+    if (producto.variantes != null && producto.variantes!.isNotEmpty) {
+      total += producto.variantes![selectedVarianteIndex].precio * cantidad;
+    }
+
+    if (producto.tamanos != null && producto.tamanos!.isNotEmpty) {
+      total += producto.tamanos![selectedSizeIndex].precio * cantidad;
+    }
+
+    for (int i = 0; i < selectedAgregados.length; i++) {
+      total += producto.agregados![i].precio * selectedAgregados[i];
+    }
+
+    return total;
   }
 }

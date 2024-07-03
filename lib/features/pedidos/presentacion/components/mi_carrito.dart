@@ -12,7 +12,7 @@ class VistaCarrito extends StatelessWidget {
     final bloc = Provider.of<PresentacionPedidosBloc>(context);
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxHeight < MediaQuery.of(context).size.height * 0.21) {
+        if (constraints.maxHeight < MediaQuery.of(context).size.height * 0.23) {
           return Container();
         }
         return Column(

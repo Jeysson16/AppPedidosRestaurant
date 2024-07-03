@@ -35,7 +35,14 @@ class SliverBodyItems extends StatelessWidget {
                         product: product,
                         imageProvider: imageProvider,
                         onProductoAgregado: () {
-                          bloc.addProducto(product);
+                          bloc.addProducto(
+                            producto: product,
+                            observacion: '',
+                            cantidad: 1,
+                            selectedSizeIndex: 0,
+                            selectedVarianteIndex: 0,
+                            selectedAgregados: List<int>.filled(product.agregados?.length ?? 0, 0),
+                          );
                         },
                       ),
                     );

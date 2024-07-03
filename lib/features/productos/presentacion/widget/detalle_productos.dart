@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:restaurant_app/app/global/view/components/my_button_rounded.dart';
 import 'package:restaurant_app/features/productos/dominio/entidades/producto.dart';
+import 'package:provider/provider.dart';
+import 'package:restaurant_app/features/pedidos/presentacion/bloc/pedido/presentacion_pedidos_bloc.dart';
+import 'package:restaurant_app/app/global/view/components/my_button_rounded.dart';
 
 class ProductosDetalles extends StatefulWidget {
   const ProductosDetalles({super.key, required this.product, required this.imageProvider, required this.onProductoAgregado});
@@ -21,6 +23,15 @@ class _ProductosDetallesState extends State<ProductosDetalles> {
   int cantidad = 1;
 
   void _agregarCarrito(BuildContext context) {
+    final bloc = Provider.of<PresentacionPedidosBloc>(context, listen: false);
+    bloc.addProducto(
+      producto: widget.product,
+      cantidad: cantidad,
+      observacion: '',
+      selectedSizeIndex: selectedSizeIndex,
+      selectedVarianteIndex: selectedVarianteIndex,
+      selectedAgregados: selectedAgregados,
+    );
     setState(() {
       heroTag = 'details';
     });
@@ -216,7 +227,7 @@ class _ProductosDetallesState extends State<ProductosDetalles> {
                   const SizedBox(height: 10),
                   if (widget.product.agregados != null && widget.product.agregados!.isNotEmpty) ...[
                     Text(
-                      'Agrega la porcion que deseas ${widget.product.nombre}',
+                      'Agrega la porción que deseas a tu ${widget.product.nombre}',
                       style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                             color: Theme.of(context).colorScheme.inverseSurface,
                             fontWeight: FontWeight.bold,
