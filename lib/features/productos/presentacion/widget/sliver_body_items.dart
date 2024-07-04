@@ -34,15 +34,21 @@ class SliverBodyItems extends StatelessWidget {
                       child: ProductosDetalles(
                         product: product,
                         imageProvider: imageProvider,
-                        onProductoAgregado: () {
-                          bloc.addProducto(
-                            producto: product,
-                            observacion: '',
-                            cantidad: 1,
-                            selectedSizeIndex: 0,
-                            selectedVarianteIndex: 0,
-                            selectedAgregados: List<int>.filled(product.agregados?.length ?? 0, 0),
-                          );
+                        onProductoAgregado: (selecciones) {
+                          for (var seleccion in selecciones) {
+                            bloc.addProducto(
+                              producto: product,
+                              observacion: [
+                                seleccion.observacion
+                              ], // Convertir a lista
+                              cantidad: seleccion.cantidad,
+                              selectedTamanoIndex:
+                                  seleccion.selectedTamanoIndex,
+                              selectedVarianteIndex:
+                                  seleccion.selectedVarianteIndex,
+                              selectedAgregados: seleccion.selectedAgregados,
+                            );
+                          }
                         },
                       ),
                     );
@@ -94,7 +100,7 @@ class SliverBodyItems extends StatelessWidget {
                           ),
                         ),
                         Hero(
-                          tag: 'list_${product.id}',
+                          tag: 'list_${product.id}_$index',
                           child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(8),

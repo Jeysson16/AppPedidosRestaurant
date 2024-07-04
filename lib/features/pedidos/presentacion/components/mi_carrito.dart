@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:restaurant_app/app/global/view/components/my_button_rounded.dart';
 import 'package:restaurant_app/features/pedidos/presentacion/bloc/pedido/presentacion_pedidos_bloc.dart';
 import 'package:restaurant_app/features/pedidos/presentacion/pages/pedidos_opciones.dart';
+import 'package:restaurant_app/features/productos/dominio/entidades/producto.dart';
 
 class VistaCarrito extends StatelessWidget {
   const VistaCarrito({super.key});
@@ -28,33 +29,79 @@ class VistaCarrito extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Expanded(
-              child: ListView.builder(
+              child: ListView.separated(
                 itemCount: bloc.carrito.length,
+                separatorBuilder: (context, index) =>
+                    const Divider(color: Colors.grey),
                 itemBuilder: (context, index) {
                   final item = bloc.carrito[index];
                   return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 8.0),
-                    child: Row(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10.0, horizontal: 8.0),
+                    child: Column(
                       children: [
-                        CircleAvatar(
-                          backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-                          backgroundImage: NetworkImage(item.producto.imagenPrincipal ?? ''),
+                        Row(
+                          children: [
+                            CircleAvatar(
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.inverseSurface,
+                              backgroundImage: NetworkImage(
+                                  item.producto.imagenPrincipal ?? ''),
+                            ),
+                            const SizedBox(width: 10),
+                            Text(item.cantidad.toString(),
+                                style: const TextStyle(color: Colors.white)),
+                            const SizedBox(width: 5),
+                            const Text('x',
+                                style: TextStyle(color: Colors.white)),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(item.producto.nombre,
+                                  style: const TextStyle(color: Colors.white)),
+                            ),
+                            Text(
+                                'S/. ${item.calcularPrecioTotal().toStringAsFixed(2)}',
+                                style: const TextStyle(color: Colors.white)),
+                            const SizedBox(width: 10),
+                            IconButton(
+                              icon: Icon(Icons.delete,
+                                  color: Theme.of(context).colorScheme.primary),
+                              onPressed: () {
+                                _showDeleteConfirmationDialog(
+                                    context, bloc, item.producto);
+                              },
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 10),
-                        Text(item.cantidad.toString(), style: const TextStyle(color: Colors.white)),
-                        const SizedBox(width: 5),
-                        const Text('x', style: TextStyle(color: Colors.white)),
-                        const SizedBox(width: 10),
-                        Text(item.producto.nombre, style: const TextStyle(color: Colors.white)),
-                        const Spacer(),
-                        Text('S/. ${item.producto.precio.toStringAsFixed(2)}', style: const TextStyle(color: Colors.white)),
-                        const SizedBox(width: 10),
-                        IconButton(
-                          icon: Icon(Icons.delete, color: Theme.of(context).colorScheme.primary),
-                          onPressed: () {
-                            bloc.eliminarItem(item.producto);
-                          },
-                        ),
+                        const SizedBox(height: 10),
+                        ...List.generate(item.cantidad, (i) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 5.0),
+                            child: TextField(
+                              style: const TextStyle(color: Colors.white),
+                              decoration: InputDecoration(
+                                labelText: 'Observación ${i + 1}',
+                                labelStyle:
+                                    const TextStyle(color: Colors.white70),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
+                                ),
+                              ),
+                              onChanged: (value) {
+                                item.observaciones[i] = value;
+                              },
+                            ),
+                          );
+                        }),
                       ],
                     ),
                   );
@@ -76,7 +123,7 @@ class VistaCarrito extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'S/. ${bloc.carrito.fold<double>(0.0, (total, item) => total + item.producto.precio * item.cantidad).toStringAsFixed(2)}',
+                    'S/. ${bloc.totalCarritoPrecio().toStringAsFixed(2)}',
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -89,12 +136,12 @@ class VistaCarrito extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: MyButtonRounded(
-                text: '¿Cómo deseas que sea tu pedido?', 
+                text: '¿Cómo deseas tu pedido?',
                 icono: const Icon(
                   Icons.skip_next,
                   color: Colors.white,
                   size: 24,
-                ), 
+                ),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -103,6 +150,35 @@ class VistaCarrito extends StatelessWidget {
                   );
                 },
               ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showDeleteConfirmationDialog(
+      BuildContext context, PresentacionPedidosBloc bloc, Producto producto) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmación'),
+          content: const Text(
+              '¿Estás seguro de que deseas eliminar este producto del carrito?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Eliminar'),
+              onPressed: () {
+                bloc.eliminarItem(producto);
+                Navigator.of(context).pop();
+              },
             ),
           ],
         );

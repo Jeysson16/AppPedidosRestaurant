@@ -246,7 +246,7 @@ class _InicioPaginaState extends State<InicioPagina>
                                                                             Stack(
                                                                           children: [
                                                                             Hero(
-                                                                              tag: 'list_${bloc.carrito[index].producto.id}_details',
+                                                                              tag: 'list_${bloc.carrito[index].producto.id}_details_${index}', // Make tag unique
                                                                               child: CircleAvatar(
                                                                                 backgroundImage: NetworkImage(bloc.carrito[index].producto.imagenPrincipal ?? ''),
                                                                               ),
@@ -269,26 +269,30 @@ class _InicioPaginaState extends State<InicioPagina>
                                                       ),
                                           ),
                                           Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8.0),
                                             decoration: BoxDecoration(
-                                              color: Theme.of(context).colorScheme.primary,
-                                              borderRadius: BorderRadius.circular(20),
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
                                             ),
                                             child: Row(
                                               children: [
                                                 Text(
                                                   'S/. ${bloc.carrito.fold<double>(0.0, (total, item) => total + item.producto.precio * item.cantidad).toStringAsFixed(2)}',
                                                   style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 20
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 20),
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ],
                                       ),
-                                    ),
-                                  ],
-                                ),
                               );
                             },
                           ),

@@ -29,14 +29,14 @@ class PresentacionPedidosBloc with ChangeNotifier {
   void addProducto({
     required Producto producto,
     required int cantidad,
-    required String observacion,
-    required int selectedSizeIndex,
-    required int selectedVarianteIndex,
-    required List<int> selectedAgregados,
+    required List<String> observacion,
+    required int? selectedTamanoIndex,
+    required int? selectedVarianteIndex,
+    required List<int>? selectedAgregados,
   }) {
     for (PedidoSeleccionadoItem item in carrito) {
       if (item.producto.id == producto.id &&
-          item.selectedSizeIndex == selectedSizeIndex &&
+          item.selectedTamanoIndex == selectedTamanoIndex &&
           item.selectedVarianteIndex == selectedVarianteIndex &&
           _areAgregadosEqual(item.selectedAgregados, selectedAgregados)) {
         item.add(cantidad);
@@ -46,9 +46,9 @@ class PresentacionPedidosBloc with ChangeNotifier {
     }
     carrito.add(PedidoSeleccionadoItem(
       cantidad: cantidad,
-      observacion: observacion,
+      observaciones: observacion,
       producto: producto,
-      selectedSizeIndex: selectedSizeIndex,
+      selectedTamanoIndex: selectedTamanoIndex,
       selectedVarianteIndex: selectedVarianteIndex,
       selectedAgregados: selectedAgregados,
     ));
@@ -64,9 +64,12 @@ class PresentacionPedidosBloc with ChangeNotifier {
       0, (previousValue, element) => previousValue + element.cantidad);
 
   double totalCarritoPrecio() => carrito.fold<double>(
-      0.0, (previousValue, element) => previousValue + element.calcularPrecioTotal());
+      0.0,
+      (previousValue, element) =>
+          previousValue + element.calcularPrecioTotal());
 
-  bool _areAgregadosEqual(List<int> a, List<int> b) {
+  bool _areAgregadosEqual(List<int>? a, List<int>? b) {
+    if (a == null || b == null) return a == b;
     if (a.length != b.length) return false;
     for (int i = 0; i < a.length; i++) {
       if (a[i] != b[i]) return false;
@@ -77,48 +80,82 @@ class PresentacionPedidosBloc with ChangeNotifier {
 
 class PedidoSeleccionadoItem {
   int cantidad;
-  String observacion;
+  List<String> observaciones;
   final Producto producto;
-  final int selectedSizeIndex;
-  final int selectedVarianteIndex;
-  final List<int> selectedAgregados;
+  int? selectedTamanoIndex;
+  int? selectedVarianteIndex;
+  List<int>? selectedAgregados;
 
   PedidoSeleccionadoItem({
     required this.cantidad,
-    required this.observacion,
     required this.producto,
-    required this.selectedSizeIndex,
-    required this.selectedVarianteIndex,
-    required this.selectedAgregados,
-  });
+    this.selectedTamanoIndex,
+    this.selectedVarianteIndex,
+    this.selectedAgregados,
+    List<String>? observaciones,
+  }) : observaciones = observaciones ?? List.filled(cantidad, '');
 
   void add(int amount) {
     cantidad += amount;
+    observaciones.addAll(List.filled(amount, ''));
   }
 
   void subtract(int amount) {
     if (cantidad > amount) {
       cantidad -= amount;
+      observaciones = observaciones.sublist(0, cantidad);
     } else {
       cantidad = 0;
+      observaciones.clear();
     }
   }
 
   double calcularPrecioTotal() {
     double total = producto.precio * cantidad;
 
-    if (producto.variantes != null && producto.variantes!.isNotEmpty) {
-      total += producto.variantes![selectedVarianteIndex].precio * cantidad;
+    if (selectedVarianteIndex != null &&
+        producto.variantes != null &&
+        producto.variantes!.isNotEmpty) {
+      total += producto.variantes![selectedVarianteIndex!].precio * cantidad;
     }
 
-    if (producto.tamanos != null && producto.tamanos!.isNotEmpty) {
-      total += producto.tamanos![selectedSizeIndex].precio * cantidad;
+    if (selectedTamanoIndex != null &&
+        producto.tamanos != null &&
+        producto.tamanos!.isNotEmpty) {
+      total += producto.tamanos![selectedTamanoIndex!].precio * cantidad;
     }
 
-    for (int i = 0; i < selectedAgregados.length; i++) {
-      total += producto.agregados![i].precio * selectedAgregados[i];
+    if (selectedAgregados != null) {
+      for (int i = 0; i < selectedAgregados!.length; i++) {
+        total += producto.agregados![i].precio * selectedAgregados![i];
+      }
     }
 
     return total;
+  }
+
+  String obtenerDescripcion() {
+    String descripcion = producto.nombre;
+    if (selectedTamanoIndex != null &&
+        producto.tamanos != null &&
+        producto.tamanos!.isNotEmpty) {
+      descripcion += " - ${producto.tamanos![selectedTamanoIndex!].nombre}";
+    }
+    if (selectedVarianteIndex != null &&
+        producto.variantes != null &&
+        producto.variantes!.isNotEmpty) {
+      descripcion += " - ${producto.variantes![selectedVarianteIndex!].nombre}";
+    }
+    if (selectedAgregados != null &&
+        producto.agregados != null &&
+        producto.agregados!.isNotEmpty) {
+      for (int i = 0; i < selectedAgregados!.length; i++) {
+        if (selectedAgregados![i] > 0) {
+          descripcion +=
+              " - ${selectedAgregados![i]} x ${producto.agregados![i].nombre}";
+        }
+      }
+    }
+    return descripcion;
   }
 }
