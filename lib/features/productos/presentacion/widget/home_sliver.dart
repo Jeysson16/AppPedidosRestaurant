@@ -318,7 +318,7 @@ class _HeaderSliver extends SliverPersistentHeaderDelegate {
           const SizedBox(height: 6),
           Expanded(
             child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 400),
+              duration: const Duration(milliseconds: 300),
               child: percent > 0.1
                   ? ListItemHeaderSliver(bloc: bloc)
                   : SliverHeaderData(

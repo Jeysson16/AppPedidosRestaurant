@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 class MyButtonRounded extends StatelessWidget {
   final Function()? onTap;
   final String text;
-  final Icon icono;
+  final String precio;
 
   const MyButtonRounded({
     super.key,
     required this.text,
-    required this.icono,
+    required this.precio,
     required this.onTap,
   });
 
@@ -35,7 +35,24 @@ class MyButtonRounded extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8.0),
-              icono,
+              if(precio.isNotEmpty)
+                Container(
+                  alignment: AlignmentDirectional.center,
+                  transformAlignment: AlignmentDirectional.center,
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                      'S/. $precio',
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                  ),
+                ),
             ],
           ),
         ),

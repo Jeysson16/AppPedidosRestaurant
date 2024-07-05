@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:restaurant_app/features/productos/dominio/entidades/producto.dart';
-
 enum PresentacionPedidoState {
   normal,
   details,
@@ -151,8 +150,7 @@ class PedidoSeleccionadoItem {
         producto.agregados!.isNotEmpty) {
       for (int i = 0; i < selectedAgregados!.length; i++) {
         if (selectedAgregados![i] > 0) {
-          descripcion +=
-              " - ${selectedAgregados![i]} x ${producto.agregados![i].nombre}";
+          descripcion += " - ${selectedAgregados![i]} x ${producto.agregados![i].nombre}";
         }
       }
     }

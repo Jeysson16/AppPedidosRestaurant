@@ -13,7 +13,7 @@ class VistaCarrito extends StatelessWidget {
     final bloc = Provider.of<PresentacionPedidosBloc>(context);
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxHeight < MediaQuery.of(context).size.height * 0.23) {
+        if (constraints.maxHeight < MediaQuery.of(context).size.height * 0.28) {
           return Container();
         }
         return Column(
@@ -137,11 +137,7 @@ class VistaCarrito extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: MyButtonRounded(
                 text: '¿Cómo deseas tu pedido?',
-                icono: const Icon(
-                  Icons.skip_next,
-                  color: Colors.white,
-                  size: 24,
-                ),
+                precio: '',
                 onTap: () {
                   Navigator.push(
                     context,

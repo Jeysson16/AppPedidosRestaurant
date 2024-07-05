@@ -3,6 +3,7 @@ import 'package:restaurant_app/features/pedidos/presentacion/bloc/pedido/present
 
 class PedidosProvider extends InheritedWidget {
   final PresentacionPedidosBloc bloc;
+  @override
   final Widget child;
 
   const PedidosProvider({

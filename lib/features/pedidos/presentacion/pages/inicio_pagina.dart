@@ -211,7 +211,7 @@ class _InicioPaginaState extends State<InicioPagina>
                               return AnimatedSwitcher(
                                 duration: const Duration(milliseconds: 400),
                                 child: _currentHeight >=
-                                        MediaQuery.of(context).size.height * 0.2
+                                        MediaQuery.of(context).size.height * 0.25
                                     ? const VistaCarrito()
                                     : Row(
                                         children: [
@@ -242,12 +242,12 @@ class _InicioPaginaState extends State<InicioPagina>
                                                                         padding: const EdgeInsets
                                                                             .symmetric(
                                                                             horizontal:
-                                                                                8.0),
+                                                                                5.0),
                                                                         child:
                                                                             Stack(
                                                                           children: [
                                                                             Hero(
-                                                                              tag: 'list_${bloc.carrito[index].producto.id}_details_${index}', // Make tag unique
+                                                                              tag: 'list_${bloc.carrito[index].producto.id}_details_$index', // Make tag unique
                                                                               child: CircleAvatar(
                                                                                 backgroundImage: NetworkImage(bloc.carrito[index].producto.imagenPrincipal ?? ''),
                                                                               ),
