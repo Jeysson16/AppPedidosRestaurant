@@ -29,7 +29,8 @@ class FirebaseProductoRepository implements ProductoRepository {
 
   //Sucursal de La esperanza en este caso:
   @override
-  Future<List<Producto>> getProductosPorCategoria(String sucursalId, String categoriaId) async {
+  Future<List<Producto>> getProductosPorCategoria(
+      String sucursalId, String categoriaId) async {
     QuerySnapshot query = await _firestore
         .collection('sucursal')
         //cambiar a sucursalId, la variable que se recibe por parametro
@@ -75,9 +76,12 @@ class FirebaseProductoRepository implements ProductoRepository {
   }
 
   @override
-  Future<String> uploadImage(Uint8List imageBytes, String sucursalId, String productId, String fileName) async {
+  Future<String> uploadImage(Uint8List imageBytes, String sucursalId,
+      String productId, String fileName) async {
     try {
-      final ref = _storage.ref().child('sucursal/$sucursalId/producto/$productId/$fileName');
+      final ref = _storage
+          .ref()
+          .child('sucursal/$sucursalId/producto/$productId/$fileName');
       UploadTask uploadTask = ref.putData(imageBytes);
       TaskSnapshot taskSnapshot = await uploadTask;
       return await taskSnapshot.ref.getDownloadURL();
@@ -87,12 +91,15 @@ class FirebaseProductoRepository implements ProductoRepository {
   }
 
   @override
-  Future<List<String>> uploadGalleryImages(List<Uint8List> imagesBytes, String sucursalId, String productId) async {
+  Future<List<String>> uploadGalleryImages(
+      List<Uint8List> imagesBytes, String sucursalId, String productId) async {
     try {
       List<String> downloadUrls = [];
       for (int i = 0; i < imagesBytes.length; i++) {
         String fileName = 'gallery_image_$i.jpg';
-        final ref = _storage.ref().child('sucursal/$sucursalId/producto/$productId/$fileName');
+        final ref = _storage
+            .ref()
+            .child('sucursal/$sucursalId/producto/$productId/$fileName');
         UploadTask uploadTask = ref.putData(imagesBytes[i]);
         TaskSnapshot taskSnapshot = await uploadTask;
         String downloadUrl = await taskSnapshot.ref.getDownloadURL();
@@ -101,6 +108,57 @@ class FirebaseProductoRepository implements ProductoRepository {
       return downloadUrls;
     } catch (e) {
       throw Exception('Error uploading gallery images: $e');
+    }
+  }
+
+  @override
+  Future<Producto> buscarProducto(
+      String sucursalId, String categoriaId, String productoId) async {
+    try {
+      DocumentSnapshot<Map<String, dynamic>> productoDoc = await _firestore
+          .collection('sucursales')
+          .doc(sucursalId)
+          .collection('categorias')
+          .doc(categoriaId)
+          .collection('productos')
+          .doc(productoId)
+          .get();
+      if (productoDoc.exists) {
+        return Producto(
+          id: productoDoc['id'],
+          nombre: productoDoc['nombre'],
+          descripcion: productoDoc['descripcion'],
+          precio: productoDoc['precio'],
+          promocion: productoDoc['promocion'],
+          imagenPrincipal: productoDoc['imagenPrincipal'],
+          galeria: List<String>.from(productoDoc['galeria'] ?? []),
+          tamanos: (productoDoc['tamanos'] as List<dynamic>?)
+                  ?.map((tamano) => Tamano(
+                        nombre: tamano['nombre'],
+                        precio: tamano['precioExtra'],
+                      ))
+                  .toList() ??
+              [],
+          variantes: (productoDoc['variantes'] as List<dynamic>?)
+                  ?.map((variante) => Variante(
+                        nombre: variante['nombre'],
+                        precio: variante['precioExtra'],
+                      ))
+                  .toList() ??
+              [],
+          agregados: (productoDoc['agregados'] as List<dynamic>?)
+                  ?.map((agregado) => Agregado(
+                        nombre: agregado['nombre'],
+                        precio: agregado['precioExtra'],
+                      ))
+                  .toList() ??
+              [],
+        );
+      } else {
+        throw Exception('Producto no encontrado');
+      }
+    } catch (e) {
+      return Producto(nombre: '', precio: 0, descripcion: '');
     }
   }
 }

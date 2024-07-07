@@ -105,17 +105,23 @@ class SliverBodyItems extends StatelessWidget {
                                     const SizedBox(width: 8),
                                     if (product.promocion! > 0)
                                       AnimatedSwitcher(
-                                        duration: const Duration(milliseconds: 300),
-                                        transitionBuilder: (Widget child, Animation<double> animation) {
-                                          return ScaleTransition(scale: animation, child: child);
+                                        duration:
+                                            const Duration(milliseconds: 300),
+                                        transitionBuilder: (Widget child,
+                                            Animation<double> animation) {
+                                          return ScaleTransition(
+                                              scale: animation, child: child);
                                         },
                                         child: Row(
-                                          key: ValueKey<double>(product.promocion!),
+                                          key: ValueKey<double>(
+                                              product.promocion!),
                                           children: [
                                             Text(
                                               ' -${product.promocion!.toStringAsFixed(2)}%',
                                               style: TextStyle(
-                                                color: Theme.of(context).colorScheme.primary,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary,
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 18,
                                               ),
@@ -168,63 +174,77 @@ class SliverBodyItems extends StatelessWidget {
       ),
     );
   }
-void _showImageGallery(BuildContext context, List<String> images) {
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.transparent,
-    builder: (context) {
-      return GestureDetector(
-        onTap: () {
-          Navigator.of(context).pop();
-        },
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            color: Colors.black.withOpacity(0.5),
-            child: Center(
-              child: Container(
-                height: MediaQuery.of(context).size.height * 0.8,
-                margin: const EdgeInsets.all(20.0),
-                padding: const EdgeInsets.all(10.0),
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  border: Border.all(
+
+  void _showImageGallery(BuildContext context, List<String> images) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return GestureDetector(
+          onTap: () {
+            Navigator.of(context).pop();
+          },
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(
+              color: Colors.black.withOpacity(0.5),
+              child: Center(
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 0.6,
+                  margin: const EdgeInsets.all(20.0),
+                  padding: const EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(
                     color: Colors.transparent,
+                    border: Border.all(
+                      color: Colors.transparent,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: PageView.builder(
-                  itemCount: images.length,
-                  itemBuilder: (context, index) {
-                    return Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 5.0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.0),
-                        image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: NetworkImage(images[index]),
-                        ),
-                      ),
-                      child: InteractiveViewer(
-                        panEnabled: false,
-                        boundaryMargin: const EdgeInsets.all(80),
-                        minScale: 0.5,
-                        maxScale: 4,
-                        child: Image.network(
-                          images[index],
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    );
-                  },
+                  child: CarouselSlider(
+                    options: CarouselOptions(
+                      pauseAutoPlayOnTouch: true,
+                      autoPlay: true,
+                      autoPlayInterval: const Duration(seconds: 4),
+                      autoPlayAnimationDuration:
+                          const Duration(milliseconds: 400),
+                      autoPlayCurve: Curves.fastOutSlowIn,
+                      viewportFraction: 1.0,
+                      height: MediaQuery.of(context).size.height * 0.5,
+                      enlargeCenterPage: true,
+                      enableInfiniteScroll: false,
+                    ),
+                    items: images.map((image) {
+                      return Builder(
+                        builder: (BuildContext context) {
+                          return InteractiveViewer(
+                            panEnabled: true,
+                            boundaryMargin: const EdgeInsets.all(20),
+                            minScale: 0.5,
+                            maxScale: 4.0,
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 5.0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0),
+                                image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: NetworkImage(image),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    }).toList(),
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      );
-    },
-  );
+        );
+      },
+    );
   }
 }

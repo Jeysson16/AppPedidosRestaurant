@@ -5,15 +5,16 @@ import 'package:restaurant_app/features/productos/presentacion/bloc/categoria/ca
 
 class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
   final CategoriaProductosRepositoryImpl categoriaProductosRepository;
-
   ProductosBloc(this.categoriaProductosRepository) : super(ProductosInitial()) {
     on<LoadProductos>(_onLoadProductos);
   }
 
-  void _onLoadProductos(LoadProductos event, Emitter<ProductosState> emit) async {
+  void _onLoadProductos(
+      LoadProductos event, Emitter<ProductosState> emit) async {
     emit(ProductosLoading());
     try {
-      final categoriasConProductos = await categoriaProductosRepository.obtenerCategoriasConProductos(event.sucursalId);
+      final categoriasConProductos = await categoriaProductosRepository
+          .obtenerCategoriasConProductos(event.sucursalId);
       emit(ProductosLoaded(categoriasConProductos));
     } catch (e) {
       emit(ProductosError(e.toString()));

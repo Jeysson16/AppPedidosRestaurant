@@ -52,6 +52,7 @@ dependencies:
   latlong2: ^0.9.1
   flutter_typeahead: ^5.2.0
   carousel_slider: ^4.2.1
+  uuid: ^4.4.0
 
 dev_dependencies:
   flutter_test:

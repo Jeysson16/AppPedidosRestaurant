@@ -39,6 +39,7 @@ class VistaCarrito extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(
                         vertical: 10.0, horizontal: 8.0),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
@@ -74,31 +75,89 @@ class VistaCarrito extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 10),
-                        ...List.generate(item.cantidad, (i) {
+                        if (item.selectedTamanoIndex != null &&
+                            item.producto.tamanos != null &&
+                            item.producto.tamanos!.isNotEmpty &&
+                            item.selectedTamanoIndex! <
+                                item.producto.tamanos!.length)
+                          Text(
+                            item.producto.tamanos![item.selectedTamanoIndex!]
+                                .nombre,
+                            style: const TextStyle(color: Colors.white70),
+                          ),
+                        if (item.selectedVarianteIndex != null &&
+                            item.producto.variantes != null &&
+                            item.producto.variantes!.isNotEmpty &&
+                            item.selectedVarianteIndex! <
+                                item.producto.variantes!.length)
+                          Text(
+                            item.producto
+                                .variantes![item.selectedVarianteIndex!].nombre,
+                            style: const TextStyle(color: Colors.white70),
+                          ),
+                        if (item.selectedAgregados != null &&
+                            item.producto.agregados != null &&
+                            item.producto.agregados!.isNotEmpty)
+                          ...List.generate(item.selectedAgregados!.length, (i) {
+                            if (item.selectedAgregados![i] > 0 &&
+                                i < item.producto.agregados!.length) {
+                              return Text(
+                                '${item.producto.agregados![i].nombre} (${item.selectedAgregados![i]})',
+                                style: const TextStyle(color: Colors.white70),
+                              );
+                            }
+                            return const SizedBox.shrink();
+                          }),
+                        const SizedBox(height: 10),
+                        ...List.generate(item.observaciones.length, (i) {
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 5.0),
-                            child: TextField(
-                              style: const TextStyle(color: Colors.white),
-                              decoration: InputDecoration(
-                                labelText: 'Observación ${i + 1}',
-                                labelStyle:
-                                    const TextStyle(color: Colors.white70),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: TextFormField(
+                                    initialValue: item.observaciones[i],
+                                    style: const TextStyle(color: Colors.white),
+                                    decoration: InputDecoration(
+                                      labelText:
+                                          'Observación para el chef o mesero',
+                                      labelStyle: const TextStyle(
+                                          color: Colors.white70),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        ),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        ),
+                                      ),
+                                    ),
+                                    onChanged: (value) {
+                                      item.observaciones[i] = value;
+                                      Provider.of<PresentacionPedidosBloc>(
+                                              context,
+                                              listen: false)
+                                          .notifyListeners();
+                                    },
                                   ),
                                 ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                  ),
-                                ),
-                              ),
-                              onChanged: (value) {
-                                item.observaciones[i] = value;
-                              },
+                                IconButton(
+                                  icon: Icon(Icons.delete,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
+                                  onPressed: () {
+                                    _showDeleteObservationDialog(
+                                        context, bloc, item, i);
+                                  },
+                                )
+                              ],
                             ),
                           );
                         }),
@@ -142,7 +201,11 @@ class VistaCarrito extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const PedidoOptionsScreen()),
+                      builder: (context) => PedidoOptionsScreen(
+                        bloc: bloc,
+                        initialAction: SliderAction.None,
+                      ),
+                    ),
                   );
                 },
               ),
@@ -173,6 +236,45 @@ class VistaCarrito extends StatelessWidget {
               child: const Text('Eliminar'),
               onPressed: () {
                 bloc.eliminarItem(producto);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showDeleteObservationDialog(BuildContext context,
+      PresentacionPedidosBloc bloc, dynamic item, int observationIndex) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Theme.of(context).colorScheme.tertiary,
+          title: const Text(
+            'Confirmación',
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
+          content: Text(
+            '¿Estás seguro de que deseas eliminar este pedido de "${item.producto.nombre}"?',
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Eliminar'),
+              onPressed: () {
+                bloc.eliminarObservacion(item.producto, observationIndex);
                 Navigator.of(context).pop();
               },
             ),

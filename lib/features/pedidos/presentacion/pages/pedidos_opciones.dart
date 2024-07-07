@@ -1,181 +1,404 @@
 import 'dart:ui';
-import 'package:flutter/material.dart';
 
-class PedidoOptionsScreen extends StatelessWidget {
-  const PedidoOptionsScreen({super.key});
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:restaurant_app/features/pedidos/presentacion/bloc/pedido/presentacion_pedidos_bloc.dart';
+import 'package:restaurant_app/features/pedidos/presentacion/pages/inicio_pagina.dart';
+import 'package:restaurant_app/features/pedidos/presentacion/pages/pedido_delivery_pagina.dart';
+import 'package:restaurant_app/features/pedidos/presentacion/pages/pedido_mesa_pagina.dart';
+import 'package:restaurant_app/features/pedidos/presentacion/pages/pedido_reserva_pagina.dart';
+import 'package:restaurant_app/features/pedidos/presentacion/widget/producto_carrusel.dart';
+
+enum SliderAction {
+  Next,
+  Previous,
+  None,
+}
+
+class OptionButton {
+  final String imagePath;
+  final String label;
+  final String description;
+
+  OptionButton({
+    required this.imagePath,
+    required this.label,
+    required this.description,
+  });
+}
+
+class PedidoOptionsScreen extends StatefulWidget {
+  final PresentacionPedidosBloc bloc;
+
+  const PedidoOptionsScreen(
+      {super.key, required this.bloc, required this.initialAction});
+
+  final SliderAction initialAction;
+  @override
+  _PedidoOptionsScreenState createState() => _PedidoOptionsScreenState();
+}
+
+class _PedidoOptionsScreenState extends State<PedidoOptionsScreen> {
+  late PresentacionPedidosBloc bloc;
+  late PageController _sliderPageController;
+  late PageController _titlePageController;
+  late int _index;
+  late double _percent;
+  late ScrollController _scrollControllerVertical;
+  double _expandedHeight = 0.1;
+  bool _isExpanded = false;
+
+  List<OptionButton> options = [
+    OptionButton(
+      imagePath: 'assets/pide_qr.png',
+      label: 'Pídelo en tu mesa',
+      description:
+          '¿Prefieres disfrutar de la comida en el restaurante? Haz tu pedido desde tu mesa y espera cómodamente.',
+    ),
+    OptionButton(
+      imagePath: 'assets/pide_delivery.png',
+      label: 'Pídelo por delivery',
+      description:
+          '¿Quieres disfrutar nuestra comida en casa? Pide delivery y te lo llevamos rápidamente a tu puerta.',
+    ),
+    OptionButton(
+      imagePath: 'assets/pide_reserva.png',
+      label: 'Pedir una reserva',
+      description:
+          '¿Planeas visitarnos pronto? Haz una reserva y asegura tu lugar para una experiencia gastronómica sin contratiempos.',
+    ),
+  ];
+  void _pageListener() {
+    _index = _sliderPageController.page!.floor();
+    _percent = (_sliderPageController.page! - _index).abs();
+    setState(() {});
+  }
+
+  void _toggleExpand() {
+    setState(() {
+      _isExpanded = !_isExpanded;
+      _expandedHeight = _isExpanded ? 0.5 : 0.2;
+    });
+  }
+
+  void _onVerticalDragUpdate(DragUpdateDetails details) {
+    setState(() {
+      _expandedHeight +=
+          details.primaryDelta! / MediaQuery.of(context).size.height;
+      _expandedHeight = _expandedHeight.clamp(0.2, 0.5);
+    });
+  }
+
+  void _onVerticalDragEnd(DragEndDetails details) {
+    setState(() {
+      if (_expandedHeight > 0.35) {
+        _isExpanded = true;
+        _expandedHeight = 0.5;
+      } else {
+        _isExpanded = false;
+        _expandedHeight = 0.2;
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _index = 2;
+    _sliderPageController = PageController(initialPage: _index);
+    _titlePageController = PageController(initialPage: _index);
+    _percent = 0.0;
+    _sliderPageController.addListener(_pageListener);
+    _scrollControllerVertical = ScrollController();
+
+    Future.delayed(const Duration(milliseconds: 400), () {
+      _initialAction(widget.initialAction);
+    });
+
+    bloc = widget.bloc;
+  }
+
+  @override
+  void dispose() {
+    _sliderPageController.removeListener(_pageListener);
+    _sliderPageController.dispose();
+    _titlePageController.dispose();
+    _scrollControllerVertical.dispose();
+
+    super.dispose();
+  }
+
+  void _initialAction(SliderAction sliderAction) {
+    switch (sliderAction) {
+      case SliderAction.None:
+        break;
+      case SliderAction.Next:
+        _sliderPageController.nextPage(
+            duration: const Duration(milliseconds: 800),
+            curve: Curves.fastOutSlowIn);
+        break;
+      case SliderAction.Previous:
+        _sliderPageController.previousPage(
+            duration: const Duration(milliseconds: 800),
+            curve: Curves.fastOutSlowIn);
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Positioned.fill(
-            child: Image.asset(
-              'assets/background.png',
-              fit: BoxFit.cover,
-            ),
-          ),
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-              child: Container(
-                color: Colors.black.withOpacity(0.1),
-              ),
-            ),
-          ),
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(height: 20),
-                Wrap(
-                  alignment: WrapAlignment.center,
-                  spacing: 20,
-                  runSpacing: 20,
-                  children: [
-                    OptionButton(
-                      imagePath: 'assets/pide_qr.png',
-                      label: 'Pídelo en tu mesa',
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const PedidoMesaScreen()),
-                        );
-                      },
-                    ),
-                    OptionButton(
-                      imagePath: 'assets/pide_delivery.png',
-                      label: 'Pídelo por delivery',
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const PedidoDeliveryScreen()),
-                        );
-                      },
-                    ),
-                    OptionButton(
-                      imagePath: 'assets/pide_reserva.png',
-                      label: 'Seleccionar como reserva',
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const PedidoReservaScreen()),
-                        );
-                      },
-                    ),
-                  ],
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class OptionButton extends StatelessWidget {
-  final String imagePath;
-  final String label;
-  final VoidCallback onTap;
-
-  const OptionButton({
-    required this.imagePath,
-    required this.label,
-    required this.onTap,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.black54,
-              borderRadius: BorderRadius.circular(50),
-            ),
-            child: CircleAvatar(
-              radius: 50,
-              backgroundImage: AssetImage(imagePath),
+          const SizedBox(height: 10),
+          Center(
+            child: Text(
+              'Escoge una opción',
+              style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.primary),
             ),
           ),
-          const SizedBox(height: 10),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-            decoration: BoxDecoration(
-              color: Colors.black54,
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            child: Text(
-              label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 14,
+          const SizedBox(height: 4),
+          GestureDetector(
+            onVerticalDragUpdate: _onVerticalDragUpdate,
+            onVerticalDragEnd: _onVerticalDragEnd,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.easeInOut,
+              height:
+                  MediaQuery.of(context).size.height * _expandedHeight * 1.2,
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                itemCount: options.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    leading: CircleAvatar(
+                      radius: 30,
+                      backgroundImage: AssetImage(options[index].imagePath),
+                    ),
+                    title: Text(
+                      options[index].label,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                    ),
+                    subtitle: Text(options[index].description),
+                    onTap: () {
+                      if (options[index].label == 'Pídelo en tu mesa') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const PedidoMesaPagina()),
+                        );
+                      } else if (options[index].label ==
+                          'Pídelo por delivery') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const PedidoDeliveryPagina()),
+                        );
+                      } else if (options[index].label == 'Pedir una reserva') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const PedidoReservaPagina()),
+                        );
+                      } else {
+                        print('Tapped option ${options[index].label}');
+                      }
+                    },
+                  );
+                },
               ),
             ),
           ),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * .2,
+            child: PageView.builder(
+              itemCount: bloc.carrito.length,
+              physics: const NeverScrollableScrollPhysics(),
+              controller: _titlePageController,
+              itemBuilder: (context, index) {
+                return _TituloProducto(
+                  item: bloc.carrito[index],
+                  total: bloc.totalCarritoPrecio(),
+                );
+              },
+            ),
+          ),
+          Expanded(
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        stops: const [0.75, 1.0],
+                        colors: [
+                          Theme.of(context).colorScheme.surface,
+                          Theme.of(context).colorScheme.primary,
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                ItemsCarrusel(
+                  percent: _percent,
+                  itemsCarrito: bloc.carrito,
+                  index: _index,
+                ),
+                PageView.builder(
+                  controller: _sliderPageController,
+                  onPageChanged: (value) {
+                    _titlePageController.animateToPage(value,
+                        duration: const Duration(milliseconds: 400),
+                        curve: Curves.fastOutSlowIn);
+                  },
+                  itemCount: bloc.carrito.length,
+                  physics: const BouncingScrollPhysics(),
+                  scrollDirection: Axis.vertical,
+                  itemBuilder: (context, index) {
+                    return InkWell(
+                      onTap: () => {},
+                    );
+                  },
+                ),
+              ],
+            ),
+          )
         ],
       ),
     );
   }
 }
 
-class PedidoMesaScreen extends StatelessWidget {
-  const PedidoMesaScreen({super.key});
+class _TituloProducto extends StatelessWidget {
+  const _TituloProducto({
+    super.key,
+    required this.item,
+    required this.total,
+  });
+
+  final PedidoSeleccionadoItem item;
+  final double total;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Pídelo en tu mesa'),
-      ),
-      body: const Center(
-        child: Text(
-            'Aquí se puede implementar la funcionalidad de escanear el código QR de la mesa.'),
-      ),
-    );
-  }
-}
+    String heroTag = 'producto-${item.producto.nombre}';
+    if (item.selectedVarianteIndex != null &&
+        item.selectedVarianteIndex! >= 0 &&
+        item.selectedVarianteIndex! < item.producto.variantes!.length) {
+      heroTag +=
+          '-variante-${item.producto.variantes![item.selectedVarianteIndex!].nombre}';
+    }
+    if (item.selectedTamanoIndex != null &&
+        item.selectedTamanoIndex! >= 0 &&
+        item.selectedTamanoIndex! < item.producto.tamanos!.length) {
+      heroTag +=
+          '-tamano-${item.producto.tamanos![item.selectedTamanoIndex!].nombre}';
+    }
+    if (item.selectedAgregados != null &&
+        item.selectedAgregados!.isNotEmpty &&
+        item.selectedAgregados!.every(
+            (index) => index >= 0 && index < item.producto.agregados!.length)) {
+      heroTag +=
+          '-agregados-${item.selectedAgregados!.map((index) => item.producto.agregados![index].nombre).join(', ')}';
+    }
 
-class PedidoDeliveryScreen extends StatelessWidget {
-  const PedidoDeliveryScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Pídelo por delivery'),
-      ),
-      body: const Center(
-        child: Text(
-            'Aquí se puede implementar la funcionalidad de seleccionar ubicación para delivery.'),
-      ),
-    );
-  }
-}
-
-class PedidoReservaScreen extends StatelessWidget {
-  const PedidoReservaScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Seleccionar como reserva'),
-      ),
-      body: const Center(
-        child: Text(
-            'Aquí se puede implementar la funcionalidad de realizar una reserva.'),
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: MediaQuery.of(context).size.width * .65,
+          child: Hero(
+            tag: heroTag + 'detalle',
+            child: Text(
+              item.producto.nombre,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.inverseSurface,
+                fontSize: 20,
+              ),
+              maxLines: 2,
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+        Text(
+          "S/. ${total.toStringAsFixed(2)}",
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.primary,
+            fontSize: 20,
+          ),
+        ),
+        Text(
+          "Cantidad: ${item.cantidad}",
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.primary,
+            fontSize: 16,
+          ),
+        ),
+        Text(
+          "Observaciones: ${item.observaciones.join(', ')}",
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.primary,
+            fontSize: 16,
+          ),
+        ),
+        if (item.selectedTamanoIndex != null &&
+            item.selectedTamanoIndex! >= 0 &&
+            item.selectedTamanoIndex! < item.producto.tamanos!.length)
+          Text(
+            item.producto.tamanos![item.selectedTamanoIndex!].nombre,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.inverseSurface,
+              fontSize: 16,
+            ),
+          ),
+        if (item.selectedVarianteIndex != null &&
+            item.selectedVarianteIndex! >= 0 &&
+            item.selectedVarianteIndex! < item.producto.variantes!.length)
+          Text(
+            item.producto.variantes![item.selectedVarianteIndex!].nombre,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.inverseSurface,
+              fontSize: 16,
+            ),
+          ),
+        if (item.selectedAgregados != null &&
+            item.selectedAgregados!.isNotEmpty &&
+            item.selectedAgregados!.every((index) =>
+                index >= 0 && index < item.producto.agregados!.length))
+          Text(
+            "Agregados: ${item.selectedAgregados!.map((index) => item.producto.agregados![index].nombre).join(', ')}",
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.primary,
+              fontSize: 16,
+            ),
+          ),
+      ],
     );
   }
 }

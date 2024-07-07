@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:restaurant_app/features/productos/dominio/entidades/producto.dart';
+
 enum PresentacionPedidoState {
   normal,
   details,
@@ -57,6 +58,21 @@ class PresentacionPedidosBloc with ChangeNotifier {
   void eliminarItem(Producto producto) {
     carrito.removeWhere((item) => item.producto.id == producto.id);
     notifyListeners();
+  }
+
+  void eliminarObservacion(Producto producto, int observacionIndex) {
+    for (PedidoSeleccionadoItem item in carrito) {
+      if (item.producto.id == producto.id) {
+        item.observaciones.removeAt(observacionIndex);
+        if (item.observaciones.isEmpty) {
+          carrito.remove(item);
+        } else {
+          item.cantidad--;
+        }
+        notifyListeners();
+        return;
+      }
+    }
   }
 
   int totalCarritoElementos() => carrito.fold<int>(
@@ -150,7 +166,8 @@ class PedidoSeleccionadoItem {
         producto.agregados!.isNotEmpty) {
       for (int i = 0; i < selectedAgregados!.length; i++) {
         if (selectedAgregados![i] > 0) {
-          descripcion += " - ${selectedAgregados![i]} x ${producto.agregados![i].nombre}";
+          descripcion +=
+              " - ${selectedAgregados![i]} x ${producto.agregados![i].nombre}";
         }
       }
     }

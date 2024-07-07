@@ -12,7 +12,6 @@ class PreferenciasUsuario {
   Empleado? get empleado {
     String? empleadoJson = _prefs.getString('empleado');
     return Empleado.fromJson(jsonDecode(empleadoJson!));
-      return null;
   }
 
   set empleado(Empleado? value) {

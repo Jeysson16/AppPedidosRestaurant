@@ -7,17 +7,24 @@ import 'package:restaurant_app/features/pedidos/data/model/calle_sugerencias.dar
 import 'package:restaurant_app/features/pedidos/data/model/feature_ubicacion_modelo.dart';
 import 'package:restaurant_app/features/pedidos/dominio/repositorios/ubicacion_repositorio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 class UbicacionRepositorioImpl implements UbicacionRepositorio {
   final FirebaseFirestore firestore;
   final String mapboxToken;
 
-  UbicacionRepositorioImpl({required this.firestore, required this.mapboxToken});
+  UbicacionRepositorioImpl(
+      {required this.firestore, required this.mapboxToken});
 
   @override
   Future<List<Sucursal>> obtenerSucursales() async {
-    QuerySnapshot snapshot = await firestore.collection('sucursales').get();
+    QuerySnapshot snapshot = await firestore.collection('sucursal').get();
     return snapshot.docs.map((doc) {
       final data = doc.data() as Map<String, dynamic>;
+
+      final ubicacion = data['ubicacion'] as GeoPoint;
+      print(
+        '${ubicacion.latitude} y longitud: ${ubicacion.longitude}',
+      );
       return Sucursal(
         id: data['id'],
         nombreSucursal: data['nombreSucursal'],
@@ -25,8 +32,8 @@ class UbicacionRepositorioImpl implements UbicacionRepositorio {
         direccion: data['direccion'],
         estado: data['estado'],
         telefono: data['telefono'],
-        ubicacion: data['ubicacion'], 
-        horaAtencionCerrado: data['horaAtencionCerrado'], 
+        ubicacion: data['ubicacion'],
+        horaAtencionCerrado: data['horaAtencionCerrado'],
         horaAtencionAbierto: data['horaAtencionAbierto'],
       );
     }).toList();
@@ -42,12 +49,14 @@ class UbicacionRepositorioImpl implements UbicacionRepositorio {
         return Future.error('Error: Permisos de ubicación denegados');
       }
     }
-    return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    return await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
   }
 
   @override
   Future<Position> geocodificarDireccion(String direccion) async {
-    final url = 'https://api.mapbox.com/search/geocode/v6/forward?q=$direccion&proximity=ip&access_token=$mapboxToken';
+    final url =
+        'https://api.mapbox.com/search/geocode/v6/forward?q=$direccion&proximity=ip&access_token=$mapboxToken';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
@@ -72,22 +81,24 @@ class UbicacionRepositorioImpl implements UbicacionRepositorio {
 
   @override
   Future<List<AddressSuggestion>> obtenerSugerencias(String query) async {
-  final url = 'https://api.mapbox.com/search/geocode/v6/forward?q=$query&country=pe&language=es&autocomplete=true&access_token=$mapboxToken';
-  final response = await http.get(Uri.parse(url));
-  if (response.statusCode == 200) {
-    final data = json.decode(response.body);
-    return (data['features'] as List)
-        .map((feature) => AddressSuggestion.fromJson(feature))
-        .toList();
-  } else {
-    throw Exception('Error fetching suggestions');
+    final url =
+        'https://api.mapbox.com/search/geocode/v6/forward?q=$query&country=pe&language=es&autocomplete=true&access_token=$mapboxToken';
+    final response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return (data['features'] as List)
+          .map((feature) => AddressSuggestion.fromJson(feature))
+          .toList();
+    } else {
+      throw Exception('Error fetching suggestions');
+    }
   }
-}
 
-  
   @override
-  Future<Position> geocodificarCoordenadas(double latitude, double longitude) async {
-    final url = 'https://api.mapbox.com/search/geocode/v6/reverse?longitude=$longitude&latitude=$latitude&access_token=$mapboxToken';
+  Future<Position> geocodificarCoordenadas(
+      double latitude, double longitude) async {
+    final url =
+        'https://api.mapbox.com/search/geocode/v6/reverse?longitude=$longitude&latitude=$latitude&access_token=$mapboxToken';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
@@ -159,9 +170,13 @@ class UbicacionRepositorioImpl implements UbicacionRepositorio {
 
   @override
   Future<List<Sucursal>> obtenerUbicacionesSucursales() async {
-    QuerySnapshot snapshot = await firestore.collection('sucursales').get();
+    QuerySnapshot snapshot = await firestore.collection('sucursal').get();
     return snapshot.docs.map((doc) {
       final data = doc.data() as Map<String, dynamic>;
+      final ubicacion = data['ubicacion'] as GeoPoint;
+      print(
+        '${ubicacion.latitude} y longitud: ${ubicacion.longitude}',
+      );
       return Sucursal(
         id: data['id'],
         nombreSucursal: data['nombreSucursal'],
@@ -170,7 +185,7 @@ class UbicacionRepositorioImpl implements UbicacionRepositorio {
         estado: data['estado'],
         telefono: data['telefono'],
         ubicacion: data['ubicacion'],
-        horaAtencionCerrado: data['horaAtencionCerrado'], 
+        horaAtencionCerrado: data['horaAtencionCerrado'],
         horaAtencionAbierto: data['horaAtencionAbierto'],
       );
     }).toList();
@@ -178,7 +193,8 @@ class UbicacionRepositorioImpl implements UbicacionRepositorio {
 
   @override
   Future<Position> buscarUbicacionManual(String direccion) async {
-    final url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/$direccion.json?access_token=$mapboxToken';
+    final url =
+        'https://api.mapbox.com/geocoding/v5/mapbox.places/$direccion.json?access_token=$mapboxToken';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
