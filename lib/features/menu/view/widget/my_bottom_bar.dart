@@ -34,7 +34,7 @@ class InstagramNavigationScreenState extends State<InstagramNavigationScreen> {
               duration: kThemeAnimationDuration,
               child: [
                 const SeleccionarMesaPage(),
-                const SuperheroSliderPage(),
+                const DetallesSliderPage(),
                 const Scaffold(body: Center(child: Text('Add'))),
                 const RegistrarEmpleadoPagina(),
                 const RegistrarProductoPage(),
@@ -96,21 +96,22 @@ class InstagramNavigationScreenState extends State<InstagramNavigationScreen> {
             hasNotification: false,
           ),
           RoundedNavigationBarItem(
-            iconData: Icons.search,
-            hasNotification: false,
+            iconData: Icons.favorite_border,
+            selectedIconData: Icons.favorite,
+            hasNotification: true,
           ),
           RoundedNavigationBarItem(
             iconData: Icons.add_box_outlined,
             hasNotification: false,
           ),
           RoundedNavigationBarItem(
-            iconData: Icons.favorite_border,
-            selectedIconData: Icons.favorite,
-            hasNotification: true,
-          ),
-          RoundedNavigationBarItem(
             iconData: Icons.person_outlined,
             selectedIconData: Icons.person,
+            hasNotification: false,
+          ),
+          RoundedNavigationBarItem(
+            iconData: Icons.app_registration_outlined,
+            selectedIconData: Icons.app_registration,
             hasNotification: false,
           ),
         ],

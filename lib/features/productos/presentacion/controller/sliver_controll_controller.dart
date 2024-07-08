@@ -63,9 +63,9 @@ class SliverScrollController {
 
   Future<void> loadData(Sucursal sucursal) async {
     listCategory = await categoriaProductosRepository
-        .obtenerCategoriasConProductos(sucursal.id ?? 'fXRPjNfB9ZehJPBR640y');
+        .obtenerCategoriasConProductos(sucursal.id ?? 'sucursal_principal');
     banners = await bannerRepository
-        .obtenerBanners(sucursal.id ?? 'fXRPjNfB9ZehJPBR640y');
+        .obtenerBanners(sucursal.id ?? 'sucursal_principal');
     listOffSetItemHeader =
         List.generate(listCategory.length, (index) => index.toDouble());
     scrollControllerItemHeader = ScrollController();

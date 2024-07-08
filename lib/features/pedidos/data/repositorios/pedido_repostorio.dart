@@ -67,7 +67,9 @@ class FirebasePedidoRepository implements PedidoRepository {
         var detalleData = detalle.toJson();
         detalleData['pedidoId'] = pedidoId; // Añadir el pedidoId al detalle
 
-        await detallesRef.doc().set(detalle.toJson());
+        print(detallesRef);
+        // Agregar el detalle a la subcolección 'detallesPedido' con un ID generado por Firebase
+        await detallesRef.add(detalleData);
       }
     } catch (e) {
       throw ("Error al guardar detalles del pedido. Detalles: $e");

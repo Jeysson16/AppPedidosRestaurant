@@ -18,17 +18,17 @@ class Cargo {
       descripcion: json["descripcion"],
       nombre: json["nombre"],
       permisos: List<String>.from(json["permisos"].map((x) => x)),
-      salarioBase: json["salarioBase"],
+      salarioBase: json["salario_base"],
     );
   }
-  
+
   Map<String, dynamic> toJson() {
-    return{
+    return {
       "id": id,
       "descripcion": descripcion,
       "nombre": nombre,
       "permisos": List<dynamic>.from(permisos.map((x) => x)),
-      "salarioBase": salarioBase,
+      "salario_base": salarioBase,
     };
   }
 

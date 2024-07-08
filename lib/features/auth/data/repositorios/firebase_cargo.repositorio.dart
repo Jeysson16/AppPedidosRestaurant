@@ -8,7 +8,8 @@ class FirebaseCargoRepository implements CargoRepository {
   @override
   Future<Cargo> buscarCargoPorId(String id) async {
     try {
-      DocumentSnapshot doc = await _firestore.collection('cargos').doc(id).get();
+      DocumentSnapshot doc =
+          await _firestore.collection('cargos').doc(id).get();
       if (doc.exists) {
         return Cargo.fromJson(doc.data() as Map<String, dynamic>);
       } else {
@@ -22,14 +23,28 @@ class FirebaseCargoRepository implements CargoRepository {
   @override
   Future<List<Cargo>> buscarTodosLosCargos(String sucursalId) async {
     try {
+      print('Sucursal ID: $sucursalId');
       QuerySnapshot query = await _firestore
           .collection('sucursal')
           .doc(sucursalId)
           .collection('cargo')
           .get();
-      return query.docs
-          .map((doc) => Cargo.fromJson(doc.data() as Map<String, dynamic>))
-          .toList();
+
+      if (query.docs.isEmpty) {
+        print('No se encontraron documentos en la subcolección "cargo".');
+        return [];
+      }
+
+      List<Cargo> cargos = query.docs.map((doc) {
+        print('Documento encontrado: ${doc.id} - ${doc.data()}');
+        var cargoData = doc.data() as Map<String, dynamic>;
+        cargoData['id'] =
+            doc.id; 
+        return Cargo.fromJson(cargoData);
+      }).toList();
+
+      print('Cargos encontrados: $cargos');
+      return cargos;
     } catch (e) {
       throw Exception('Error buscando todos los cargos: $e');
     }
@@ -38,7 +53,7 @@ class FirebaseCargoRepository implements CargoRepository {
   @override
   Future<void> crearCargo(Cargo cargo) async {
     try {
-      await _firestore.collection('cargos').add(cargo.toJson());
+      await _firestore.collection('cargo').add(cargo.toJson());
     } catch (e) {
       throw Exception('Error creando cargo: $e');
     }
@@ -47,7 +62,10 @@ class FirebaseCargoRepository implements CargoRepository {
   @override
   Future<void> actualizarCargo(Cargo cargo) async {
     try {
-      await _firestore.collection('cargos').doc(cargo.id).update(cargo.toJson());
+      await _firestore
+          .collection('cargos')
+          .doc(cargo.id)
+          .update(cargo.toJson());
     } catch (e) {
       throw Exception('Error actualizando cargo: $e');
     }

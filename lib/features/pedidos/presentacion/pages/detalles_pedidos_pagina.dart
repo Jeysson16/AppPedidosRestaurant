@@ -2,47 +2,50 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:restaurant_app/app/global/view/components/cargando_pagina.dart';
 import 'package:restaurant_app/features/pedidos/dominio/entidades/detalle.dart';
 import 'package:restaurant_app/features/pedidos/presentacion/components/detalle_card.dart';
+import 'package:restaurant_app/features/pedidos/presentacion/pages/confirmacion_pedido.dart';
 
-class SuperheroSliderPage extends StatefulWidget {
-  const SuperheroSliderPage({
+class DetallesSliderPage extends StatefulWidget {
+  const DetallesSliderPage({
     super.key,
   });
 
   @override
-  SuperheroSliderPageState createState() => SuperheroSliderPageState();
+  DetallesSliderPageState createState() => DetallesSliderPageState();
 }
 
-class SuperheroSliderPageState extends State<SuperheroSliderPage> {
+class DetallesSliderPageState extends State<DetallesSliderPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   List<DetallePedido> _detallePedidos = [];
-
   Future<void> _fetchDetallePedidos() async {
     try {
       // Fetch all pedido documents
       QuerySnapshot pedidosSnapshot =
           await _firestore.collection('pedidos').get();
-
       List<DetallePedido> detallePedidos = [];
+
       // For each pedido document, fetch its detallesPedido subcollection
       for (var pedidoDoc in pedidosSnapshot.docs) {
         QuerySnapshot detallesSnapshot =
             await pedidoDoc.reference.collection('detallesPedido').get();
 
         List<DetallePedido> detalles = detallesSnapshot.docs.map((doc) {
-          return DetallePedido.fromJson(doc.data() as Map<String, dynamic>);
+          var detalleData = doc.data() as Map<String, dynamic>;
+          detalleData['id'] = doc.id; // Assign doc.id to detalleData
+          return DetallePedido.fromJson(detalleData);
         }).toList();
         detallePedidos.addAll(detalles);
       }
 
       // Update the state with the combined list of detallePedidos
-      setState(() {
-        _detallePedidos = detallePedidos
-            .where((detalle) => detalle.estado == 'Sin Atención')
-            .toList();
-      });
+      if (mounted) {
+        setState(() {
+          _detallePedidos = detallePedidos
+              .where((detalle) => detalle.estado == 'Sin Atención')
+              .toList();
+        });
+      }
     } catch (e) {
       print('Error al obtener detalles de pedidos: $e');
     }
@@ -147,7 +150,10 @@ class SuperheroSliderPageState extends State<SuperheroSliderPage> {
             itemCount: _detallePedidos.length,
             itemBuilder: (context, index) {
               return InkWell(
-                onLongPress: () => _openDetail(context, _detallePedidos[index]),
+                onTap: () {
+                  print(_detallePedidos[index].id);
+                  _openDetail(context, _detallePedidos[index]);
+                },
                 child: const SizedBox(),
               );
             },
@@ -168,7 +174,9 @@ class SuperheroSliderPageState extends State<SuperheroSliderPage> {
         // Obtener la referencia a la colección de detallesPedido dentro de cada pedido
         QuerySnapshot detallesSnapshot = await pedidoDoc.reference
             .collection('detallesPedido')
-            .where('id', isEqualTo: detallePedido.id)
+            .where(FieldPath.documentId,
+                isEqualTo: detallePedido
+                    .id) // Usar FieldPath.documentId para buscar por doc.id
             .limit(1)
             .get();
 
@@ -180,13 +188,8 @@ class SuperheroSliderPageState extends State<SuperheroSliderPage> {
           // Actualizar el estado del detalle pedido a 'Preparado'
           await detalleRef.update({'estado': 'Preparado'});
 
-          // Refrescar la lista _detallePedidos después de la actualización
-          await _fetchDetallePedidos();
-
-          // Mostrar mensaje de éxito
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Detalle pedido marcado como preparado')),
-          );
+          // Refrescar la lista de detallePedidos
+          _fetchDetallePedidos();
 
           // Salir del bucle si se encontró y actualizó el detallePedido
           return;
@@ -195,15 +198,16 @@ class SuperheroSliderPageState extends State<SuperheroSliderPage> {
 
       // Mostrar mensaje si no se encontró el detallePedido
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('No se encontró el detalle pedido para actualizar'),
         ),
       );
     } catch (e) {
       // Mostrar mensaje de error si hubo algún problema
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al marcar detalle como preparado')),
+        const SnackBar(content: Text('Error al marcar detalle como preparado')),
       );
+      print('Error en _openDetail: $e');
     }
   }
 }
