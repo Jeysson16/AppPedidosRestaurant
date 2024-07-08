@@ -4,6 +4,7 @@ import 'package:restaurant_app/features/menu/view/bloc/menu_bloc.dart';
 import 'package:restaurant_app/features/menu/view/bloc/menu_bloc_provider.dart';
 import 'package:restaurant_app/features/menu/view/widget/blur_card.dart';
 import 'package:restaurant_app/features/mesa/presentacion/pages/seleccionar_mesa.dart';
+import 'package:restaurant_app/features/pedidos/presentacion/pages/detalles_pedidos_pagina.dart';
 import 'package:restaurant_app/features/productos/presentacion/pages/registrar_productos.dart';
 
 class InstagramNavigationScreen extends StatefulWidget {
@@ -33,7 +34,7 @@ class InstagramNavigationScreenState extends State<InstagramNavigationScreen> {
               duration: kThemeAnimationDuration,
               child: [
                 const SeleccionarMesaPage(),
-                const Scaffold(body: Center(child: Text('Explore'))),
+                const SuperheroSliderPage(),
                 const Scaffold(body: Center(child: Text('Add'))),
                 const RegistrarEmpleadoPagina(),
                 const RegistrarProductoPage(),

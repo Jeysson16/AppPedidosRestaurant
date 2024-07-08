@@ -103,7 +103,8 @@ class SliverBodyItems extends StatelessWidget {
                                       ),
                                     ),
                                     const SizedBox(width: 8),
-                                    if (product.promocion! > 0)
+                                    if (product.promocion != null &&
+                                        product.promocion! > 0)
                                       AnimatedSwitcher(
                                         duration:
                                             const Duration(milliseconds: 300),

@@ -6,4 +6,5 @@ abstract class MesaRepository {
   Future<void> crearMesa(Mesa mesa);
   Future<void> actualizarMesa(Mesa mesa);
   Future<void> eliminarMesa(String id);
+  Future<void> actualizarEstado(String estado,String sucursalId, String mesaId, String pisoId);
 }

@@ -23,67 +23,10 @@ class SeleccionarMesaDetallePage extends StatefulWidget {
 
 class _SeleccionarMesaDetallePageState
     extends State<SeleccionarMesaDetallePage> {
-  List<DocumentSnapshot> _categorias = [];
-  final Map<String, List<DocumentSnapshot>> _productosPorCategoria = {};
-  final Map<String, int> _carrito = {};
   String? piso;
   @override
   void initState() {
     super.initState();
-    _loadCategorias();
-  }
-
-  Future<void> _loadCategorias() async {
-    PreferenciasUsuario preferenciasUsuario = PreferenciasUsuario();
-    try {
-      QuerySnapshot categoriasSnapshot = await FirebaseFirestore.instance
-          .collection('sucursal')
-          .doc(preferenciasUsuario.sucursalId)
-          .collection('categoria')
-          .get();
-
-      setState(() {
-        _categorias = categoriasSnapshot.docs;
-      });
-
-      for (var categoria in _categorias) {
-        QuerySnapshot productosSnapshot = await FirebaseFirestore.instance
-            .collection('sucursal')
-            .doc('sucursalid')
-            .collection('categoria')
-            .doc(categoria.id)
-            .collection('producto')
-            .get();
-
-        setState(() {
-          _productosPorCategoria[categoria.id] = productosSnapshot.docs;
-        });
-      }
-    } catch (e) {
-      throw ('Error al cargar categorías y productos: $e');
-    }
-  }
-
-  void _addToCart(String productId) {
-    setState(() {
-      if (_carrito.containsKey(productId)) {
-        _carrito[productId] = _carrito[productId]! + 1;
-      } else {
-        _carrito[productId] = 1;
-      }
-    });
-  }
-
-  void _removeFromCart(String productId) {
-    setState(() {
-      if (_carrito.containsKey(productId)) {
-        if (_carrito[productId]! > 1) {
-          _carrito[productId] = _carrito[productId]! - 1;
-        } else {
-          _carrito.remove(productId);
-        }
-      }
-    });
   }
 
   @override
@@ -108,16 +51,6 @@ class _SeleccionarMesaDetallePageState
             ),
           ),
           ListadoProductos(),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: () {
-                // Aquí puedes agregar la lógica para finalizar el pedido
-                print('Carrito: $_carrito');
-              },
-              child: const Text('Finalizar Pedido'),
-            ),
-          ),
         ],
       ),
     );

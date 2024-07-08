@@ -12,11 +12,12 @@ class SliverScrollController {
   final CategoriaProductosRepositoryImpl categoriaProductosRepository;
   final BannerRepository bannerRepository;
 
-  SliverScrollController(this.categoriaProductosRepository, this.bannerRepository) {
+  SliverScrollController(
+      this.categoriaProductosRepository, this.bannerRepository) {
     scrollControllerGlobally = ScrollController();
     listCategory = [];
     categoryKeys = {};
-    banners=[];
+    banners = [];
   }
 
   // Lista de banners
@@ -56,14 +57,17 @@ class SliverScrollController {
       curve: Curves.easeInOut,
     );
   }
-  
+
   // Valor que indica si el encabezado es visible
   final visibleHeader = ValueNotifier(false);
 
   Future<void> loadData(Sucursal sucursal) async {
-    listCategory = await categoriaProductosRepository.obtenerCategoriasConProductos(sucursal.id ?? 'defaultId');
-    banners = await bannerRepository.obtenerBanners(sucursal.id ?? 'defaultId');
-    listOffSetItemHeader = List.generate(listCategory.length, (index) => index.toDouble());
+    listCategory = await categoriaProductosRepository
+        .obtenerCategoriasConProductos(sucursal.id ?? 'fXRPjNfB9ZehJPBR640y');
+    banners = await bannerRepository
+        .obtenerBanners(sucursal.id ?? 'fXRPjNfB9ZehJPBR640y');
+    listOffSetItemHeader =
+        List.generate(listCategory.length, (index) => index.toDouble());
     scrollControllerItemHeader = ScrollController();
 
     // Asignar GlobalKeys a las categorías
@@ -88,7 +92,6 @@ class SliverScrollController {
     scrollControllerGlobally.removeListener(_listenToScrollChange);
     visibleHeader.removeListener(_listenVisibleHeader);
 
-
     if (scrollControllerItemHeader.hasClients) {
       scrollControllerItemHeader.dispose();
     }
@@ -108,7 +111,8 @@ class SliverScrollController {
 
   void _listenToScrollChange() {
     globalOffsetValue.value = scrollControllerGlobally.offset;
-    if (scrollControllerGlobally.position.userScrollDirection == ScrollDirection.reverse) {
+    if (scrollControllerGlobally.position.userScrollDirection ==
+        ScrollDirection.reverse) {
       goingDown.value = true;
     } else {
       goingDown.value = false;

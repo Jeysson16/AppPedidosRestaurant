@@ -34,17 +34,22 @@ class Producto {
       precio: json["precio"] as double,
       promocion: json["promocion"] as double?,
       imagenPrincipal: json["imagenPrincipal"] as String?,
-      galeria: json["galeria"] == null ? null : List<String>.from(json["galeria"]),
+      galeria:
+          json["galeria"] == null ? null : List<String>.from(json["galeria"]),
       descripcion: json["descripcion"] as String,
       tamanos: json["tamanos"] == null
           ? null
           : (json["tamanos"] as List).map((x) => Tamano.fromJson(x)).toList(),
       variantes: json["variantes"] == null
           ? null
-          : (json["variantes"] as List).map((x) => Variante.fromJson(x)).toList(),
+          : (json["variantes"] as List)
+              .map((x) => Variante.fromJson(x))
+              .toList(),
       agregados: json["agregados"] == null
           ? null
-          : (json["agregados"] as List).map((x) => Agregado.fromJson(x)).toList(),
+          : (json["agregados"] as List)
+              .map((x) => Agregado.fromJson(x))
+              .toList(),
     );
   }
 

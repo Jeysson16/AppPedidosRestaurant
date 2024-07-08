@@ -7,7 +7,6 @@ import 'package:restaurant_app/app/global/preferencias/pref_usuarios.dart';
 import 'package:restaurant_app/features/menu/data/service/firebase_service_mesa.dart';
 
 class SeleccionarMesaPageUsuario extends StatefulWidget {
-  static const routeName = '/seleccionar';
   const SeleccionarMesaPageUsuario({super.key});
 
   @override

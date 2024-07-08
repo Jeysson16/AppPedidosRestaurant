@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:restaurant_app/app/global/view/components/cargando_pagina.dart';
 import 'package:restaurant_app/features/menu/view/bloc/menu_bloc_provider.dart';
-import 'package:restaurant_app/features/productos/presentacion/pages/seleccionar_producto.dart';
+import 'package:restaurant_app/features/mesa/presentacion/pages/seleccionada_mesa.dart';
 import 'package:restaurant_app/app/global/preferencias/pref_usuarios.dart';
 import 'package:restaurant_app/features/menu/data/service/firebase_service_mesa.dart';
 
@@ -18,11 +18,9 @@ class SeleccionarMesaPage extends StatefulWidget {
 class _SeleccionarMesaPageState extends State<SeleccionarMesaPage> {
   final MesaService _mesaService = MesaService();
   String? _selectedPiso;
-  String? _selectedPisoDescripcion;
   List<DocumentSnapshot> _pisos = [];
   List<DocumentSnapshot> _mesas = [];
   bool _isLoading = true;
-  int? _selectedMesaIndex;
 
   @override
   void initState() {
@@ -32,10 +30,17 @@ class _SeleccionarMesaPageState extends State<SeleccionarMesaPage> {
     _loadPisos();
   }
 
+  // Método para guardar pisoId y mesaId en PreferenciasUsuario
+  Future<void> _guardarSeleccion(String pisoId, String mesaId) async {
+    PreferenciasUsuario.init();
+    PreferenciasUsuario prefs = PreferenciasUsuario();
+    prefs.pisoId = pisoId;
+    prefs.mesaId = mesaId;
+  }
+
   Future<void> _loadPisos() async {
     PreferenciasUsuario preferenciasUsuario = PreferenciasUsuario();
     final sucursalId = preferenciasUsuario.sucursalId;
-    print(sucursalId);
     if (sucursalId != null) {
       try {
         final pisos = await _mesaService.getPisos(sucursalId);
@@ -44,12 +49,10 @@ class _SeleccionarMesaPageState extends State<SeleccionarMesaPage> {
           _isLoading = false;
           if (_pisos.isNotEmpty) {
             _selectedPiso = _pisos.first.id;
-            _selectedPisoDescripcion = _pisos.first['nombre'];
             _loadMesas(_selectedPiso!);
           }
         });
       } catch (e) {
-        print('Error al cargar pisos: $e');
         setState(() {
           _isLoading =
               false; // Marca la carga como completada aunque haya error
@@ -152,9 +155,7 @@ class _SeleccionarMesaPageState extends State<SeleccionarMesaPage> {
                                 onTap: () {
                                   setState(() {
                                     _selectedPiso = piso.id;
-                                    _selectedPisoDescripcion = piso['nombre'];
                                     _loadMesas(piso.id);
-                                    _selectedMesaIndex = null;
                                   });
                                 },
                                 child: Container(
@@ -202,21 +203,13 @@ class _SeleccionarMesaPageState extends State<SeleccionarMesaPage> {
                             return GestureDetector(
                               onTap: () {
                                 if (mesa['estado'] == 'Disponible') {
-                                  setState(() {
-                                    _selectedMesaIndex = index;
-                                  });
-                                  // Aquí abrimos la nueva página y pasamos los datos necesarios
+                                  setState(() {});
+                                  _guardarSeleccion(_selectedPiso!, mesa.id);
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                          SeleccionarMesaDetallePage(
-                                        pisoId: _selectedPiso!,
-                                        pisoNombre: _selectedPisoDescripcion!,
-                                        mesaId: mesa.id,
-                                        mesaNombre: mesa['descripcion'],
-                                      ),
-                                    ),
+                                        builder: (context) =>
+                                            const ListadoProductos()),
                                   );
                                 }
                               },

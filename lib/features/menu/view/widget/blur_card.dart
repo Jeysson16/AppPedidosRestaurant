@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:restaurant_app/app/global/preferencias/pref_usuarios.dart';
 import 'package:restaurant_app/features/menu/view/bloc/menu_bloc.dart';
 import 'package:restaurant_app/features/menu/view/bloc/menu_bloc_provider.dart';
 
@@ -15,7 +16,8 @@ class SettingsBlurCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final instagramBloc = MenuBlocProvider.of(context)!.instagramBloc;
-
+    PreferenciasUsuario.init();
+    PreferenciasUsuario prefs = PreferenciasUsuario();
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(bottom: Radius.circular(50)),
       child: BackdropFilter(
@@ -32,13 +34,13 @@ class SettingsBlurCard extends StatelessWidget {
                   builder: (context, child) {
                     return Row(
                       children: [
+                        const SizedBox(height: 40),
                         Expanded(
-                          flex: 10,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
-                                'Visualization',
+                                'Sucursal: ',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w800,
@@ -46,44 +48,24 @@ class SettingsBlurCard extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(height: 10),
-                              Row(
-                                children: List.generate(3, (index) {
-                                  return _ViewModeItem(
-                                    modeNumber: index + 1,
-                                    nameMode: [
-                                      'Ample',
-                                      'Clean',
-                                      'Old',
-                                    ][index],
-                                    viewState: [
-                                      ViewState.ample,
-                                      ViewState.clean,
-                                      ViewState.old,
-                                    ][index],
-                                  );
-                                }),
-                              )
+                              Text(
+                                '${prefs.sucursalId}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 16,
+                                ),
+                              ),
                             ],
                           ),
                         ),
                         Expanded(
-                          flex: 7,
                           child: Padding(
                             padding: const EdgeInsets.only(right: 10, top: 10),
                             child: Column(
                               children: [
                                 _SettingsSwitcher(
-                                  label: 'Horizontal',
-                                  value: false,
-                                  onChanged: (val) {},
-                                ),
-                                _SettingsSwitcher(
-                                  label: 'Swift chat',
-                                  value: false,
-                                  onChanged: (val) {},
-                                ),
-                                _SettingsSwitcher(
-                                  label: 'Dark Theme',
+                                  label: 'Modo Oscuro',
                                   value:
                                       instagramBloc.themeMode == ThemeMode.dark,
                                   onChanged: (val) {
@@ -119,70 +101,6 @@ class SettingsBlurCard extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _ViewModeItem extends StatelessWidget {
-  const _ViewModeItem({
-    required this.viewState,
-    required this.modeNumber,
-    required this.nameMode,
-  });
-
-  final ViewState viewState;
-  final int modeNumber;
-  final String nameMode;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final instagramBloc = MenuBlocProvider.of(context)!.instagramBloc;
-    return Expanded(
-      child: Column(
-        children: [
-          InkWell(
-            onTap: () {
-              instagramBloc.changeView(viewState);
-            },
-            child: AnimatedContainer(
-              duration: kThemeAnimationDuration,
-              alignment: Alignment.center,
-              height: MediaQuery.of(context).size.height * .1,
-              margin: const EdgeInsets.only(right: 10),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.white,
-                  width: 3,
-                  style: instagramBloc.viewState == viewState
-                      ? BorderStyle.solid
-                      : BorderStyle.none,
-                ),
-                color: instagramBloc.viewState == viewState
-                    ? colorScheme.onSurface.withOpacity(.2)
-                    : colorScheme.onPrimary.withOpacity(.2),
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: Text(
-                '$modeNumber',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-          Text(
-            nameMode,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              height: 1.5,
-              color: Colors.white,
-            ),
-          )
-        ],
       ),
     );
   }

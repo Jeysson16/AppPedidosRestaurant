@@ -34,6 +34,26 @@ class PreferenciasUsuario {
     }
   }
 
+  String? get usuarioDni {
+    return _prefs.getString('usuarioDni');
+  }
+
+  set usuarioDni(String? value) {
+    if (value != null) {
+      _prefs.setString('usuarioDni', value);
+    }
+  }
+
+  String? get pisoId {
+    return _prefs.getString('pisoId');
+  }
+
+  set pisoId(String? value) {
+    if (value != null) {
+      _prefs.setString('pisoId', value);
+    }
+  }
+
   String? get sucursalId {
     return _prefs.getString('sucursalId');
   }
@@ -41,6 +61,16 @@ class PreferenciasUsuario {
   set sucursalId(String? value) {
     if (value != null) {
       _prefs.setString('sucursalId', value);
+    }
+  }
+
+  String? get mesaId {
+    return _prefs.getString('mesaId');
+  }
+
+  set mesaId(String? value) {
+    if (value != null) {
+      _prefs.setString('mesaId', value);
     }
   }
 

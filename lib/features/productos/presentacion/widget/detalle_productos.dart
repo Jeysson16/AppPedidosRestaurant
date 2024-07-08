@@ -138,12 +138,21 @@ class _ProductosDetallesState extends State<ProductosDetalles> {
                       child: Container(
                         height: MediaQuery.of(context).size.height * 0.26,
                         child: PageView.builder(
-                          itemCount: widget.product.galeria!.length,
+                          itemCount: widget.product.galeria?.length ??
+                              1, // Usar 1 si galeria es null
                           itemBuilder: (context, index) {
-                            return Image.network(
-                              widget.product.galeria![index],
-                              fit: BoxFit.cover,
-                            );
+                            if (widget.product.galeria != null &&
+                                widget.product.galeria!.isNotEmpty) {
+                              return Image.network(
+                                widget.product.galeria![index],
+                                fit: BoxFit.cover,
+                              );
+                            } else {
+                              return Image.asset(
+                                'assets/restaurant.png', // Ruta de la imagen de reemplazo
+                                fit: BoxFit.cover,
+                              );
+                            }
                           },
                         ),
                       ),

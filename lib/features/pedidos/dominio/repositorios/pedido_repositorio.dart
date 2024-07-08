@@ -1,6 +1,7 @@
 import 'package:restaurant_app/features/pedidos/dominio/entidades/pedido.dart';
 
 abstract class PedidoRepository {
+  
   Future<Pedido> buscarPedidoPorId(String id);
   Future<List<Pedido>> obtenerTodosLosPedidos(String mesaId);
   Future<void> crearPedido(Pedido pedido);
