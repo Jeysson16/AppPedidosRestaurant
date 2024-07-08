@@ -6,24 +6,31 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:restaurant_app/features/mesa/dominio/entidades/sucursal.dart';
 import 'package:restaurant_app/features/pedidos/data/model/calle_sugerencias.dart';
+import 'package:restaurant_app/features/pedidos/presentacion/bloc/pedido/presentacion_pedidos_bloc.dart';
 import 'package:restaurant_app/features/pedidos/presentacion/bloc/ubicacion_bloc.dart';
 import 'package:restaurant_app/features/pedidos/presentacion/bloc/ubicacion_event.dart';
 import 'package:restaurant_app/features/pedidos/presentacion/bloc/ubicacion_state.dart';
 import 'package:restaurant_app/features/pedidos/presentacion/components/mi_ubicacion_marker.dart';
+import 'package:restaurant_app/features/pedidos/presentacion/pages/confirmacion_pedido.dart';
 
 const mapboxToken =
     "pk.eyJ1IjoiamV5c3NvbjM2IiwiYSI6ImNseG92MXl3MTBiOTUya3B3cjV2NngyMWsifQ.x8I5goP1hAQwWME3obHsZg";
 
-LatLng _miUbicacion = LatLng(-8.077511514344646, -78.9964878591555);
+LatLng _miUbicacion = const LatLng(-8.077511514344646, -78.9964878591555);
 
 class MiUbicacion extends StatefulWidget {
-  const MiUbicacion({Key? key}) : super(key: key);
+  final PresentacionPedidosBloc bloc;
+  const MiUbicacion({
+    super.key,
+    required this.bloc,
+  });
 
   @override
   State<MiUbicacion> createState() => _MiUbicacionState();
 }
 
 class _MiUbicacionState extends State<MiUbicacion> {
+  late PresentacionPedidosBloc bloc;
   LatLng? _ubiSucursal;
   final LayerHitNotifier hitNotifier = ValueNotifier(null);
   LatLng? _selectedLocation;
@@ -42,6 +49,7 @@ class _MiUbicacionState extends State<MiUbicacion> {
     _searchController = TextEditingController();
     _ubicacionBloc.add(ObtenerUbicacionSucursalesEvent());
     _ubicacionBloc.add(ObtenerUbicacionTiempoRealEvent());
+    bloc = widget.bloc;
   }
 
   @override
@@ -70,19 +78,15 @@ class _MiUbicacionState extends State<MiUbicacion> {
 
   List<Polyline> _buildPolylines() {
     final List<Polyline> polylines = [];
-
     if (_selectedLocation != null && _ubiSucursal != null) {
       final List<LatLng> polylinePoints = [_miUbicacion, _ubiSucursal!];
 
+      _mapController.move(_miUbicacion, 16.0);
       polylines.add(
         Polyline(
           points: polylinePoints,
-          useStrokeWidthInMeter: true,
-          pattern: StrokePattern.dotted(),
-          strokeJoin: StrokeJoin.bevel,
-          strokeCap: StrokeCap.round,
           color: Theme.of(context).colorScheme.primary,
-          strokeWidth: 3.0,
+          strokeWidth: 6.0,
         ),
       );
     }
@@ -95,10 +99,9 @@ class _MiUbicacionState extends State<MiUbicacion> {
     for (final sucursal in sucursales) {
       final geoPoint = sucursal.ubicacion as GeoPoint;
       final latLng = LatLng(geoPoint.latitude, geoPoint.longitude);
-      final List<LatLng> polylinePoints = [_miUbicacion, latLng];
 
       markerList.add(Marker(
-        height: 45,
+        height: 60,
         width: 45,
         point: latLng,
         child: GestureDetector(
@@ -194,8 +197,12 @@ class _MiUbicacionState extends State<MiUbicacion> {
                   IconButton(
                     icon: const Icon(Icons.arrow_forward),
                     onPressed: () {
-                      // Lógica para manejar el botón "Siguiente"
-                      // Puedes navegar a la siguiente pantalla u otra acción
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FaceIDView(),
+                        ),
+                      );
                     },
                   ),
                 ],
@@ -211,7 +218,7 @@ class _MiUbicacionState extends State<MiUbicacion> {
                       if (_selectedLocation != null) {
                         _miUbicacion = _selectedLocation!;
 
-                        _mapController.move(_miUbicacion, 18.0);
+                        _mapController.move(_miUbicacion, 16.0);
                       }
                     } else if (state is UrlTemplateObtenido) {
                       _urlTemplate = state.urlTemplate;
@@ -222,7 +229,7 @@ class _MiUbicacionState extends State<MiUbicacion> {
                     return FlutterMap(
                       mapController: _mapController,
                       options: MapOptions(
-                        minZoom: 5,
+                        minZoom: 4,
                         maxZoom: 18,
                         initialCenter: _selectedLocation ?? _miUbicacion,
                         initialZoom: 14,

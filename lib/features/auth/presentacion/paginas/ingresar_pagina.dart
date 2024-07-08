@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:restaurant_app/app/global/view/components/my_button.dart';
 import 'package:restaurant_app/app/global/view/components/my_textfield.dart';
-import 'package:restaurant_app/features/auth/data/repositorios/firebase_empleado_repositorio.dart';
+import 'package:restaurant_app/app/global/view/components/splash_pagina.dart';
+import 'package:restaurant_app/features/auth/data/repositorios/firebase_usuarios_repositorio.dart';
 import 'package:restaurant_app/features/pedidos/presentacion/pages/inicio_pagina.dart';
+import 'package:restaurant_app/features/menu/pages/menu.dart';
 
 class Entrar extends StatefulWidget {
   final void Function()? onRegisterTap;
@@ -22,33 +24,72 @@ class _EntrarState extends State<Entrar> {
   // controladores
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final FirebaseAutenticacionRepositorio authService = FirebaseAutenticacionRepositorio();
+  final FirebaseAutenticacionRepositorio authService =
+      FirebaseAutenticacionRepositorio();
   bool cargando = false;
+  void _onIniciarSesion() async {
+    // Obtener datos del formulario
+    String email = emailController.text.trim();
+    String password = passwordController.text;
 
-  // iniciar sesion
-  void iniciar() {
+    // Mostrar splash screen
     Navigator.push(
-      context, 
-      MaterialPageRoute(builder: (context) => const InicioPagina())
+      context,
+      MaterialPageRoute(builder: (context) => SplashScreen()),
     );
+
+    try {
+      // Validar que los campos no estén vacíos
+      if (email.isEmpty || password.isEmpty) {
+        throw Exception('Por favor completa todos los campos.');
+      }
+
+      // Validar que los datos sean no nulos
+      if (email == null || password == null) {
+        throw Exception('El email y la contraseña no pueden estar vacíos.');
+      }
+
+      // Llamar a authService para iniciar sesión
+      bool esEmpleado = await authService.iniciarSesion(email, password);
+
+      // Quitar el splash screen después de completar la autenticación
+      Navigator.pop(context);
+
+      if (esEmpleado) {
+        // Redirigir a la pantalla de menú para empleados
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const SeleccionarMenuApp()),
+        );
+      } else {
+        // Redirigir a la página de inicio para usuarios normales
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const InicioPagina()),
+        );
+      }
+    } catch (e) {
+      // Quitar el splash screen en caso de error
+      Navigator.pop(context);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error en el inicio de sesión: $e')),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0), // para un poco de padding
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              //logo
-              Image.asset(height: 170, "assets/restaurant.png"),
-              
+              Image.asset("assets/restaurant.png", height: 170),
               const SizedBox(height: 25),
-              //slogan
               Text(
                 "Restaurant D' Gilberth",
                 style: TextStyle(
@@ -56,25 +97,24 @@ class _EntrarState extends State<Entrar> {
                   color: Theme.of(context).colorScheme.inversePrimary,
                 ),
               ),
-
               const SizedBox(height: 25),
-              //email
-              MyTextField(controller: emailController, hintText: "Correo Electronico", obscureText: false),
-
+              MyTextField(
+                controller: emailController,
+                hintText: "Correo Electrónico",
+                obscureText: false,
+              ),
               const SizedBox(height: 10),
-              
-              //contraseña
-              MyTextField(controller: passwordController, hintText: "Contraseña", obscureText: true),
-
+              MyTextField(
+                controller: passwordController,
+                hintText: "Contraseña",
+                obscureText: true,
+              ),
               const SizedBox(height: 25),
-              //boton iniciar sesion
               MyButton(
                 text: "Iniciar Sesión",
-                onTap: iniciar,
+                onTap: _onIniciarSesion,
               ),
-
               const SizedBox(height: 20),
-              //registrarse y ingresar sin cuenta
               Column(
                 children: [
                   Row(

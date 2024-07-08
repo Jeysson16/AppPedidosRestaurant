@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restaurant_app/app/global/view/components/cargando_pagina.dart';
 import 'package:restaurant_app/features/mesa/dominio/entidades/sucursal.dart';
 import 'package:restaurant_app/features/productos/presentacion/controller/sliver_controll_controller.dart';
 import 'package:restaurant_app/features/productos/presentacion/widget/background_sliver.dart';
@@ -77,10 +78,13 @@ class _VistaProductosState extends State<VistaProductos> {
                           child: value
                               ? Container(
                                   key: ValueKey(sucursalSeleccionada),
-                                  padding: const EdgeInsets.only(left: 8, right: 8),
+                                  padding:
+                                      const EdgeInsets.only(left: 8, right: 8),
                                   decoration: BoxDecoration(
                                     border: Border.all(
-                                        color: Theme.of(context).colorScheme.primary,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
                                         width: 1),
                                     borderRadius: BorderRadius.circular(15),
                                   ),
@@ -112,9 +116,11 @@ class _VistaProductosState extends State<VistaProductos> {
                                               .firstWhere((sucursal) =>
                                                   sucursal.id == newValue);
                                           widget.bloc
-                                              .loadData(sucursalSeleccionadaData!)
+                                              .loadData(
+                                                  sucursalSeleccionadaData!)
                                               .then((_) {
-                                            setState(() {}); // Forzar actualización de la UI
+                                            setState(
+                                                () {}); // Forzar actualización de la UI
                                           });
                                         }
                                       });
@@ -123,13 +129,14 @@ class _VistaProductosState extends State<VistaProductos> {
                                     dropdownColor:
                                         Theme.of(context).colorScheme.surface,
                                     icon: Icon(Icons.arrow_drop_down,
-                                        color: Theme.of(context).colorScheme.primary),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary),
                                     borderRadius: BorderRadius.circular(15),
                                     underline: const SizedBox(),
                                     style: TextStyle(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                       fontSize: 16,
                                     ),
                                   ),
@@ -141,14 +148,17 @@ class _VistaProductosState extends State<VistaProductos> {
                   ),
                   Expanded(
                     child: widget.bloc.listCategory.isEmpty
-                        ? const Center(child: CircularProgressIndicator())
+                        ? const CustomLoadingPage()
                         : NotificationListener<ScrollNotification>(
                             onNotification: (scroll) {
                               if (scroll is ScrollUpdateNotification) {
-                                widget.bloc.valueScroll.value = scroll.metrics.extentInside;
-                                if (scroll.metrics.pixels > 0 && showDropdown.value) {
+                                widget.bloc.valueScroll.value =
+                                    scroll.metrics.extentInside;
+                                if (scroll.metrics.pixels > 0 &&
+                                    showDropdown.value) {
                                   showDropdown.value = false;
-                                } else if (scroll.metrics.pixels <= 0 && !showDropdown.value) {
+                                } else if (scroll.metrics.pixels <= 0 &&
+                                    !showDropdown.value) {
                                   showDropdown.value = true;
                                 }
                               }
@@ -161,7 +171,8 @@ class _VistaProductosState extends State<VistaProductos> {
                                 builder: (_, double valueCurrentScroll, __) {
                                   return CustomScrollView(
                                     physics: const BouncingScrollPhysics(),
-                                    controller: widget.bloc.scrollControllerGlobally,
+                                    controller:
+                                        widget.bloc.scrollControllerGlobally,
                                     slivers: [
                                       _FlexibleSpaceBarHeader(
                                         valueScroll: valueCurrentScroll,
@@ -175,22 +186,31 @@ class _VistaProductosState extends State<VistaProductos> {
                                           sucursal: sucursalSeleccionadaData!,
                                         ),
                                       ),
-                                      for (var category in widget.bloc.listCategory) ...[
+                                      for (var category
+                                          in widget.bloc.listCategory) ...[
                                         SliverPersistentHeader(
                                           delegate: MyHeaderTitle(
                                             category.nombre,
-                                            (visible) => widget.bloc.refreshHeader(
-                                              widget.bloc.listCategory.indexOf(category),
+                                            (visible) =>
+                                                widget.bloc.refreshHeader(
+                                              widget.bloc.listCategory
+                                                  .indexOf(category),
                                               visible,
-                                              lastIndex: widget.bloc.listCategory.indexOf(category) > 0
-                                                  ? widget.bloc.listCategory.indexOf(category) - 1
+                                              lastIndex: widget
+                                                          .bloc.listCategory
+                                                          .indexOf(category) >
+                                                      0
+                                                  ? widget.bloc.listCategory
+                                                          .indexOf(category) -
+                                                      1
                                                   : null,
                                             ),
                                           ),
                                         ),
                                         SliverBodyItems(
                                           listItem: category.productos,
-                                          key: widget.bloc.categoryKeys[category.id],
+                                          key: widget
+                                              .bloc.categoryKeys[category.id],
                                         ),
                                       ],
                                     ],
@@ -244,7 +264,7 @@ class _FlexibleSpaceBarHeader extends StatelessWidget {
           children: [
             if (bloc.banners.isNotEmpty)
               BackgroundSliver(
-                banners: bloc.banners, 
+                banners: bloc.banners,
                 onBannerTap: handleBannerTap,
               ),
           ],
@@ -253,7 +273,6 @@ class _FlexibleSpaceBarHeader extends StatelessWidget {
     );
   }
 }
-
 
 const _maxHeaderExtent = 110.0;
 
@@ -264,7 +283,8 @@ class _HeaderSliver extends SliverPersistentHeaderDelegate {
   final Sucursal sucursal;
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
     final percent = shrinkOffset / _maxHeaderExtent;
     if (percent > 0.1) {
       bloc.visibleHeader.value = true;
@@ -296,11 +316,14 @@ class _HeaderSliver extends SliverPersistentHeaderDelegate {
                     ),
                   ),
                 if (percent > 0.1)
-                  const SizedBox(width: 8.0), // Añadimos espacio solo si la flecha está visible
+                  const SizedBox(
+                      width:
+                          8.0), // Añadimos espacio solo si la flecha está visible
                 Expanded(
                   child: AnimatedSlide(
                     duration: const Duration(milliseconds: 300),
-                    offset: Offset(percent < 0.1 ? 0 : 0.01, 0), // Ajustamos el desplazamiento para que sea más sutil
+                    offset: Offset(percent < 0.1 ? 0 : 0.01,
+                        0), // Ajustamos el desplazamiento para que sea más sutil
                     curve: Curves.easeIn,
                     child: Text(
                       sucursal.nombreSucursal,
@@ -323,7 +346,8 @@ class _HeaderSliver extends SliverPersistentHeaderDelegate {
                   ? ListItemHeaderSliver(bloc: bloc)
                   : SliverHeaderData(
                       cuisine: sucursal.direccion,
-                      horaAtencion: '${sucursal.horaAtencionAbierto} - ${sucursal.horaAtencionCerrado}',
+                      horaAtencion:
+                          '${sucursal.horaAtencionAbierto} - ${sucursal.horaAtencionCerrado}',
                       estado: sucursal.estado,
                       telefono: sucursal.telefono,
                     ),
@@ -332,7 +356,8 @@ class _HeaderSliver extends SliverPersistentHeaderDelegate {
           if (percent > 0.1)
             Container(
               height: 0.5,
-              color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.2),
+              color:
+                  Theme.of(context).colorScheme.inversePrimary.withOpacity(0.2),
             ),
         ],
       ),
@@ -346,5 +371,6 @@ class _HeaderSliver extends SliverPersistentHeaderDelegate {
   double get minExtent => _maxHeaderExtent;
 
   @override
-  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) => true; // Cambiado a true para forzar la reconstrucción
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) =>
+      true; // Cambiado a true para forzar la reconstrucción
 }

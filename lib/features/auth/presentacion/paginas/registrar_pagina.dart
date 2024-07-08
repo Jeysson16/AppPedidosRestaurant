@@ -47,7 +47,7 @@ class _RegistrarEmpleadoPaginaState extends State<RegistrarEmpleadoPagina> {
           if (state is AuthLoading) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const LoadingPage()),
+              MaterialPageRoute(builder: (context) => const CustomLoadingPage()),
             );
           } else if (state is AuthSuccess) {
             Navigator.pop(context); // Quitar la pantalla de carga

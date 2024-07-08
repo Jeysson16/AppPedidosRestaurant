@@ -145,6 +145,10 @@ class PedidoSeleccionadoItem {
         total += producto.agregados![i].precio * selectedAgregados![i];
       }
     }
+    // Aplicar promoción si existe
+    if (producto.promocion != null && producto.promocion! > 0) {
+      total -= producto.promocion! * cantidad;
+    }
 
     return total;
   }

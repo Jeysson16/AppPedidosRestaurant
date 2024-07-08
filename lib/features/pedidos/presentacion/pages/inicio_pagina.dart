@@ -167,14 +167,9 @@ class _InicioPaginaState extends State<InicioPagina>
                       child: BlocBuilder<SucursalBloc, SucursalState>(
                         builder: (context, sucursalState) {
                           if (sucursalState is SucursalLoading) {
-                            return const Center(
-                                child: CircularProgressIndicator());
+                            return const SizedBox.shrink();
                           } else if (sucursalState is SucursalLoaded) {
                             final sucursales = sucursalState.sucursales;
-                            if (sucursales.isEmpty) {
-                              return const Center(
-                                  child: Text('No hay sucursales disponibles'));
-                            }
                             return VistaProductos(
                               bloc: _sliverScrollController,
                               sucursales: sucursales,
@@ -211,7 +206,8 @@ class _InicioPaginaState extends State<InicioPagina>
                               return AnimatedSwitcher(
                                 duration: const Duration(milliseconds: 400),
                                 child: _currentHeight >=
-                                        MediaQuery.of(context).size.height * 0.25
+                                        MediaQuery.of(context).size.height *
+                                            0.25
                                     ? const VistaCarrito()
                                     : Row(
                                         children: [

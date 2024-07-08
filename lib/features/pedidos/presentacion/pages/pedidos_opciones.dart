@@ -1,18 +1,16 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:restaurant_app/features/pedidos/presentacion/bloc/pedido/presentacion_pedidos_bloc.dart';
-import 'package:restaurant_app/features/pedidos/presentacion/pages/inicio_pagina.dart';
-import 'package:restaurant_app/features/pedidos/presentacion/pages/pedido_delivery_pagina.dart';
+import 'package:restaurant_app/features/pedidos/presentacion/components/mi_direccion.dart';
 import 'package:restaurant_app/features/pedidos/presentacion/pages/pedido_mesa_pagina.dart';
 import 'package:restaurant_app/features/pedidos/presentacion/pages/pedido_reserva_pagina.dart';
 import 'package:restaurant_app/features/pedidos/presentacion/widget/producto_carrusel.dart';
 
 enum SliderAction {
-  Next,
-  Previous,
-  None,
+  next,
+  previous,
+  none,
 }
 
 class OptionButton {
@@ -46,7 +44,6 @@ class _PedidoOptionsScreenState extends State<PedidoOptionsScreen> {
   late double _percent;
   late ScrollController _scrollControllerVertical;
   double _expandedHeight = 0.1;
-  bool _isExpanded = false;
 
   List<OptionButton> options = [
     OptionButton(
@@ -74,13 +71,6 @@ class _PedidoOptionsScreenState extends State<PedidoOptionsScreen> {
     setState(() {});
   }
 
-  void _toggleExpand() {
-    setState(() {
-      _isExpanded = !_isExpanded;
-      _expandedHeight = _isExpanded ? 0.5 : 0.2;
-    });
-  }
-
   void _onVerticalDragUpdate(DragUpdateDetails details) {
     setState(() {
       _expandedHeight +=
@@ -92,10 +82,8 @@ class _PedidoOptionsScreenState extends State<PedidoOptionsScreen> {
   void _onVerticalDragEnd(DragEndDetails details) {
     setState(() {
       if (_expandedHeight > 0.35) {
-        _isExpanded = true;
         _expandedHeight = 0.5;
       } else {
-        _isExpanded = false;
         _expandedHeight = 0.2;
       }
     });
@@ -130,14 +118,14 @@ class _PedidoOptionsScreenState extends State<PedidoOptionsScreen> {
 
   void _initialAction(SliderAction sliderAction) {
     switch (sliderAction) {
-      case SliderAction.None:
+      case SliderAction.none:
         break;
-      case SliderAction.Next:
+      case SliderAction.next:
         _sliderPageController.nextPage(
             duration: const Duration(milliseconds: 800),
             curve: Curves.fastOutSlowIn);
         break;
-      case SliderAction.Previous:
+      case SliderAction.previous:
         _sliderPageController.previousPage(
             duration: const Duration(milliseconds: 800),
             curve: Curves.fastOutSlowIn);
@@ -214,8 +202,10 @@ class _PedidoOptionsScreenState extends State<PedidoOptionsScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  const PedidoDeliveryPagina()),
+                            builder: (context) => MiUbicacion(
+                              bloc: bloc,
+                            ),
+                          ),
                         );
                       } else if (options[index].label == 'Pedir una reserva') {
                         Navigator.push(
@@ -224,9 +214,7 @@ class _PedidoOptionsScreenState extends State<PedidoOptionsScreen> {
                               builder: (context) =>
                                   const PedidoReservaPagina()),
                         );
-                      } else {
-                        print('Tapped option ${options[index].label}');
-                      }
+                      } else {}
                     },
                   );
                 },
@@ -242,7 +230,7 @@ class _PedidoOptionsScreenState extends State<PedidoOptionsScreen> {
               itemBuilder: (context, index) {
                 return _TituloProducto(
                   item: bloc.carrito[index],
-                  total: bloc.totalCarritoPrecio(),
+                  total: bloc.carrito[index].calcularPrecioTotal(),
                 );
               },
             ),
@@ -297,7 +285,6 @@ class _PedidoOptionsScreenState extends State<PedidoOptionsScreen> {
 
 class _TituloProducto extends StatelessWidget {
   const _TituloProducto({
-    super.key,
     required this.item,
     required this.total,
   });
@@ -332,40 +319,46 @@ class _TituloProducto extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         SizedBox(
-          width: MediaQuery.of(context).size.width * .65,
+          width: MediaQuery.of(context).size.width * .85,
           child: Hero(
-            tag: heroTag + 'detalle',
-            child: Text(
-              item.producto.nombre,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.inverseSurface,
-                fontSize: 20,
-              ),
-              maxLines: 2,
-              textAlign: TextAlign.center,
+            tag: '${heroTag}detalle',
+            child: Row(
+              children: [
+                Text(
+                  item.producto.nombre,
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.inverseSurface,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold),
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
+                ),
+                const Spacer(),
+                Text(
+                  "S/. ${total.toStringAsFixed(2)}",
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontSize: 22,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
-        Text(
-          "S/. ${total.toStringAsFixed(2)}",
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.primary,
-            fontSize: 20,
-          ),
-        ),
-        Text(
-          "Cantidad: ${item.cantidad}",
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.primary,
-            fontSize: 16,
-          ),
-        ),
-        Text(
-          "Observaciones: ${item.observaciones.join(', ')}",
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.primary,
-            fontSize: 16,
-          ),
+        Row(
+          children: [
+            const Spacer(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: Text(
+                "Cantidad: ${item.cantidad}",
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.primary,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ],
         ),
         if (item.selectedTamanoIndex != null &&
             item.selectedTamanoIndex! >= 0 &&
@@ -398,6 +391,27 @@ class _TituloProducto extends StatelessWidget {
               fontSize: 16,
             ),
           ),
+        const SizedBox(
+          height: 5,
+        ),
+        Text(
+          "Observaciones:",
+          style: TextStyle(
+              color: Theme.of(context).colorScheme.primary,
+              fontSize: 16,
+              fontWeight: FontWeight.bold),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            " ${item.observaciones.join(', ')}",
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.inverseSurface,
+              fontSize: 14,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
       ],
     );
   }

@@ -33,6 +33,7 @@ class PreferenciasUsuario {
       _prefs.remove('permisos');
     }
   }
+
   String? get sucursalId {
     return _prefs.getString('sucursalId');
   }

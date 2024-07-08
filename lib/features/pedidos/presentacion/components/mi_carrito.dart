@@ -203,7 +203,7 @@ class VistaCarrito extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => PedidoOptionsScreen(
                         bloc: bloc,
-                        initialAction: SliderAction.None,
+                        initialAction: SliderAction.none,
                       ),
                     ),
                   );

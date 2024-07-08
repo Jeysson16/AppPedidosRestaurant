@@ -83,7 +83,13 @@ class _ProductosDetallesState extends State<ProductosDetalles> {
         total += widget.product.agregados![i].precio *
             seleccion.selectedAgregados[i];
       }
+
+      // Aplicar promoción si existe
+      if (widget.product.promocion != null && widget.product.promocion! > 0) {
+        total -= widget.product.promocion! * seleccion.cantidad;
+      }
     }
+
     return total;
   }
 
@@ -344,23 +350,42 @@ class _ProductosDetallesState extends State<ProductosDetalles> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(
-                      'S/. ${subtotal.toStringAsFixed(2)}',
-                      style:
-                          Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                color: Theme.of(context).colorScheme.primary,
-                                fontSize: 26,
-                                fontWeight: FontWeight.bold,
-                              ),
-                    ),
                     if (widget.product.promocion != null &&
-                        widget.product.promocion! > 0)
+                        widget.product.promocion! > 0) ...[
                       Text(
-                        'S/. ${(subtotal - widget.product.promocion!).toStringAsFixed(2)}',
+                        'S/. ${widget.product.precio.toStringAsFixed(2)}',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: Theme.of(context).colorScheme.secondary,
                               fontWeight: FontWeight.bold,
                               decoration: TextDecoration.lineThrough,
+                              fontSize:
+                                  16, // Tamaño reducido para el precio original
+                            ),
+                      ),
+                      const SizedBox(height: 5), // Espacio entre los textos
+                      Text(
+                        'S/. ${(subtotal).toStringAsFixed(2)}',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium
+                            ?.copyWith(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontSize:
+                                  26, // Tamaño normal o resaltado para el precio promocional
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                    ] else
+                      Text(
+                        'S/. ${subtotal.toStringAsFixed(2)}',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium
+                            ?.copyWith(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontSize:
+                                  26, // Tamaño normal para el subtotal sin promoción
+                              fontWeight: FontWeight.bold,
                             ),
                       ),
                   ],
@@ -557,7 +582,7 @@ class _ProductosDetallesState extends State<ProductosDetalles> {
           runSpacing: 8.0,
           alignment: WrapAlignment.center,
           children: List.generate(widget.product.agregados!.length, (i) {
-            return Container(
+            return SizedBox(
               width: MediaQuery.of(context).size.width *
                   0.9, // Adjust width to center the items
               child: Card(
@@ -696,6 +721,10 @@ class _ProductosDetallesState extends State<ProductosDetalles> {
     for (int i = 0; i < seleccion.selectedAgregados.length; i++) {
       subtotal +=
           widget.product.agregados![i].precio * seleccion.selectedAgregados[i];
+    }
+    // Aplicar promoción si existe
+    if (widget.product.promocion != null && widget.product.promocion! > 0) {
+      subtotal -= widget.product.promocion! * seleccion.cantidad;
     }
 
     return subtotal;

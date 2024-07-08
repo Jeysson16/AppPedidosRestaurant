@@ -8,11 +8,11 @@ class ImageGalleryDialog extends StatelessWidget {
   final String tag;
 
   const ImageGalleryDialog({
-    Key? key,
+    super.key,
     required this.images,
     required this.initialIndex,
     required this.tag,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
