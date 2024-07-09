@@ -188,8 +188,8 @@ class FirebaseAutenticacionRepositorio implements AuthRepository {
         };
       } else {
         userData = {
-          'nombres': '',
-          'apellidos': '',
+          'nombres': ' ',
+          'apellidos': ' ',
           'correo': email,
           'dni': dni,
         };

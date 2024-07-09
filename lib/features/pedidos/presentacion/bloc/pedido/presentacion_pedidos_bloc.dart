@@ -110,6 +110,17 @@ class PedidoSeleccionadoItem {
     List<String>? observaciones,
   }) : observaciones = observaciones ?? List.filled(cantidad, '');
 
+  Map<String, dynamic> toJson() {
+    return {
+      'cantidad': cantidad,
+      'observaciones': observaciones,
+      'producto': producto.toJson(), // Convertir el producto a JSON
+      'selectedTamanoIndex': selectedTamanoIndex,
+      'selectedVarianteIndex': selectedVarianteIndex,
+      'selectedAgregados': selectedAgregados,
+    };
+  }
+
   void add(int amount) {
     cantidad += amount;
     observaciones.addAll(List.filled(amount, ''));

@@ -1,5 +1,7 @@
+import 'dart:convert';
+
+import 'package:barcode_widget/barcode_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:restaurant_app/app/global/preferencias/pref_usuarios.dart';
@@ -128,12 +130,6 @@ class _PedidoReservaPaginaState extends State<PedidoReservaPagina> {
 
               // Mostrar el mensaje de éxito
               // ignore: use_build_context_synchronously
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Pedido realizado con éxito'),
-                  duration: Duration(seconds: 2),
-                ),
-              );
 
               // Limpiar el carrito de compras en el bloc
               widget.bloc.carrito.clear();
@@ -414,6 +410,12 @@ class _PedidoReservaPaginaState extends State<PedidoReservaPagina> {
       selectedTime.hour + 1,
       selectedTime.minute,
     );
+    List<PedidoSeleccionadoItem> carrito = widget.bloc.carrito;
+
+    List<Map<String, dynamic>> carritoJson =
+        carrito.map((item) => item.toJson()).toList();
+    String carritoJsonString = jsonEncode(carritoJson);
+
     // Obtener el nombre de la sucursal y aplicar transformaciones
     String sucursalNombre = preferencias.sucursalNombre ?? '';
     sucursalNombre = sucursalNombre.replaceAll('Sucursal ', '');
@@ -571,9 +573,6 @@ class _PedidoReservaPaginaState extends State<PedidoReservaPagina> {
             Container(
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.tertiary,
-                borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(22),
-                    bottomRight: Radius.circular(22)),
               ),
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -641,6 +640,231 @@ class _PedidoReservaPaginaState extends State<PedidoReservaPagina> {
                           ),
                         ],
                       )
+                    ],
+                  )
+                ],
+              ),
+            ),
+            Column(
+              children: List.generate(widget.bloc.carrito.length, (index) {
+                final item = widget.bloc.carrito[index];
+                final observacionesString = item.observaciones.join(', ');
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.tertiary,
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                              child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Flex(
+                              direction: Axis.horizontal,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisSize: MainAxisSize.max,
+                              children: List.generate(
+                                  (MediaQuery.of(context).size.width / 15)
+                                      .floor(),
+                                  (index) => SizedBox(
+                                      width: 5,
+                                      height: 1,
+                                      child: DecoratedBox(
+                                          decoration: BoxDecoration(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .surface)))),
+                            ),
+                          )),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            children: [
+                              CircleAvatar(
+                                radius: 25,
+                                backgroundImage: NetworkImage(
+                                    item.producto.imagenPrincipal!),
+                              ),
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              Text(
+                                '${item.producto.nombre}',
+                                style: TextStyle(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .inverseSurface,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              Text(
+                                ' S/. ${(item.cantidad * item.producto.precio).toStringAsFixed(2)}',
+                                style: TextStyle(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                'Cantidad: ${item.cantidad}',
+                                style: TextStyle(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .inverseSurface,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              observacionesString,
+                              style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .inverseSurface,
+                                fontSize: 12,
+                              ),
+                              overflow: TextOverflow.visible,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.tertiary,
+                borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(22),
+                    bottomRight: Radius.circular(22)),
+              ),
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                          child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Flex(
+                          direction: Axis.horizontal,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisSize: MainAxisSize.max,
+                          children: List.generate(
+                              (MediaQuery.of(context).size.width / 15).floor(),
+                              (index) => SizedBox(
+                                  width: 5,
+                                  height: 1,
+                                  child: DecoratedBox(
+                                      decoration: BoxDecoration(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .surface)))),
+                        ),
+                      )),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(15),
+                          child: BarcodeWidget(
+                            barcode: Barcode.code128(),
+                            data: 'https://www.youtube.com',
+                            drawText: false,
+                            color: Theme.of(context).colorScheme.primary,
+                            width: MediaQuery.of(context).size.width - 100,
+                            height: 70,
+                          ),
+                        ),
+                      )
+
+                      /*
+                      Column(
+                        children: [
+                          Text(
+                            '${selectedDate.day} ${DateFormat('MMMM', 'es_ES').format(selectedDate)[0].toUpperCase()}${DateFormat('MMMM', 'es_ES').format(selectedDate).substring(1)}',
+                            style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .inverseSurface,
+                                fontSize: 14),
+                          ),
+                          Text(
+                            "Reserva",
+                            style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .inverseSurface,
+                                fontSize: 12),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Text(
+                            DateFormat('dd/MM/yy').format(DateTime.now()),
+                            style: TextStyle(
+                              color:
+                                  Theme.of(context).colorScheme.inverseSurface,
+                              fontSize: 14,
+                            ),
+                          ),
+                          Text(
+                            "Creada",
+                            style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .inverseSurface,
+                                fontSize: 12),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Text(
+                            '${preferencias.usuarioDni!.substring(0, 8)}',
+                            style: TextStyle(
+                              color:
+                                  Theme.of(context).colorScheme.inverseSurface,
+                              fontSize: 14,
+                            ),
+                          ),
+                          Text(
+                            "Cliente",
+                            style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .inverseSurface,
+                                fontSize: 12),
+                          ),
+                        ],
+                      )
+                      */
                     ],
                   )
                 ],

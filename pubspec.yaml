@@ -54,6 +54,8 @@ dependencies:
   carousel_slider: ^4.2.1
   uuid: ^4.4.0
   flutter_launcher_icons: ^0.13.1
+  barcode_widget: ^2.0.4
+  qr_flutter: ^4.1.0
 
 dev_dependencies:
   flutter_test:

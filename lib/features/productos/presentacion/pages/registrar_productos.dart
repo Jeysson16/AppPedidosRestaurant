@@ -119,7 +119,6 @@ class _RegistrarProductoPageState extends State<RegistrarProductoPage> {
           _mainImageUrl = await _productoService.uploadImageFile(
               _mainImageFile!, sucursalId, _nombreController.text, 'principal');
         }
-        print('URL de imagen principal: $_mainImageUrl');
 
         // Subir imágenes adicionales a Firebase Storage y obtener las URLs
         List<String> additionalImageUrls = [];
@@ -143,8 +142,6 @@ class _RegistrarProductoPageState extends State<RegistrarProductoPage> {
           }
         }
         _additionalImageUrls = additionalImageUrls;
-        print('URLs de imágenes adicionales: $_additionalImageUrls');
-
         // Agregar producto a Firestore
         await _productoService.addProducto(
           sucursalId: sucursalId,
@@ -155,8 +152,6 @@ class _RegistrarProductoPageState extends State<RegistrarProductoPage> {
           imagenPrincipal: _mainImageUrl!,
           galeria: _additionalImageUrls,
         );
-        print('Producto registrado en Firestore');
-
         // Limpiar el formulario
         _nombreController.clear();
         _descripcionController.clear();
@@ -193,22 +188,31 @@ class _RegistrarProductoPageState extends State<RegistrarProductoPage> {
               padding: const EdgeInsets.all(16.0),
               child: SingleChildScrollView(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     TextField(
                       controller: _nombreController,
                       decoration: const InputDecoration(
-                          labelText: 'Nombre del producto'),
+                        labelText: 'Nombre del producto',
+                      ),
                     ),
+                    const SizedBox(height: 16),
                     TextField(
                       controller: _descripcionController,
-                      decoration:
-                          const InputDecoration(labelText: 'Descripción'),
+                      decoration: const InputDecoration(
+                        labelText: 'Descripción',
+                      ),
+                      maxLines: 3,
                     ),
+                    const SizedBox(height: 16),
                     TextField(
                       controller: _precioController,
-                      decoration: const InputDecoration(labelText: 'Precio'),
+                      decoration: const InputDecoration(
+                        labelText: 'Precio',
+                      ),
                       keyboardType: TextInputType.number,
                     ),
+                    const SizedBox(height: 16),
                     DropdownButton<String>(
                       hint: const Text('Selecciona una categoría'),
                       value: _selectedCategoria,
@@ -224,72 +228,21 @@ class _RegistrarProductoPageState extends State<RegistrarProductoPage> {
                         });
                       },
                     ),
-                    const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        ElevatedButton(
-                          onPressed: _pickMainImage,
-                          child: const Text('Seleccionar Imagen Principal'),
-                        ),
-                        const SizedBox(width: 20),
-                        _mainImageBytes != null
-                            ? Image.memory(
-                                _mainImageBytes!,
-                                width: 100,
-                                height: 100,
-                                fit: BoxFit.cover,
-                              )
-                            : _mainImageFile != null
-                                ? Image.file(
-                                    _mainImageFile!,
-                                    width: 100,
-                                    height: 100,
-                                    fit: BoxFit.cover,
-                                  )
-                                : Container(),
-                      ],
+                    const SizedBox(height: 24),
+                    _buildImageSelectionRow(
+                      label: 'Imagen Principal',
+                      onPressed: _pickMainImage,
+                      imageBytes: _mainImageBytes,
+                      imageFile: _mainImageFile,
                     ),
-                    const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        ElevatedButton(
-                          onPressed: _pickAdditionalImage,
-                          child: const Text('Seleccionar Imágenes Adicionales'),
-                        ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: SizedBox(
-                            height: 100,
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: kIsWeb
-                                  ? _additionalImageBytes.length
-                                  : _additionalImageFiles.length,
-                              itemBuilder: (context, index) {
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8.0),
-                                  child: kIsWeb
-                                      ? Image.memory(
-                                          _additionalImageBytes[index],
-                                          width: 100,
-                                          height: 100,
-                                          fit: BoxFit.cover,
-                                        )
-                                      : Image.file(
-                                          _additionalImageFiles[index],
-                                          width: 100,
-                                          height: 100,
-                                          fit: BoxFit.cover,
-                                        ),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
+                    const SizedBox(height: 24),
+                    _buildImageSelectionRow(
+                      label: 'Imágenes Adicionales',
+                      onPressed: _pickAdditionalImage,
+                      imageBytesList: _additionalImageBytes,
+                      imageFilesList: _additionalImageFiles,
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 24),
                     ElevatedButton(
                       onPressed: _registerProduct,
                       child: const Text('Registrar Producto'),
@@ -298,6 +251,79 @@ class _RegistrarProductoPageState extends State<RegistrarProductoPage> {
                 ),
               ),
             ),
+    );
+  }
+
+  Widget _buildImageSelectionRow({
+    required String label,
+    required VoidCallback onPressed,
+    List<Uint8List>? imageBytesList,
+    List<File>? imageFilesList,
+    Uint8List? imageBytes,
+    File? imageFile,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        GestureDetector(
+          onTap: onPressed,
+          child: Container(
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Center(
+              child: Icon(
+                Icons.add_photo_alternate,
+                size: 48,
+                color: Colors.grey[600],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                if (imageBytes != null) _buildImagePreview(imageBytes),
+                if (imageFile != null) _buildImageFilePreview(imageFile),
+                if (imageBytesList != null)
+                  ...imageBytesList.map((bytes) => _buildImagePreview(bytes)),
+                if (imageFilesList != null)
+                  ...imageFilesList.map((file) => _buildImageFilePreview(file)),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildImagePreview(Uint8List bytes) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Image.memory(
+        bytes,
+        width: 100,
+        height: 100,
+        fit: BoxFit.cover,
+      ),
+    );
+  }
+
+  Widget _buildImageFilePreview(File file) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Image.file(
+        file,
+        width: 100,
+        height: 100,
+        fit: BoxFit.cover,
+      ),
     );
   }
 }
