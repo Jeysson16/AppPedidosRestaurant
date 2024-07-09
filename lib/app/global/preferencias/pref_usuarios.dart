@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:restaurant_app/features/auth/dominio/entidades/empleado.dart';
+import 'package:restaurant_app/features/mesa/dominio/entidades/sucursal.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PreferenciasUsuario {
@@ -34,13 +35,13 @@ class PreferenciasUsuario {
     }
   }
 
-  String? get sucursalUbicacion {
-    return _prefs.getString('sucursalUbicacion');
+  String? get sucursalNombre {
+    return _prefs.getString('sucursalNombre');
   }
 
-  set sucursalUbicacion(String? value) {
+  set sucursalNombre(String? value) {
     if (value != null) {
-      _prefs.setString('sucursalUbicacion', value);
+      _prefs.setString('sucursalNombre', value);
     }
   }
 

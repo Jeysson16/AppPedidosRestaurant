@@ -28,10 +28,10 @@ class VistaCarritoEmpleado extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Detalles del Carrito',
               style: TextStyle(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.inverseSurface,
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
               ),
@@ -62,18 +62,30 @@ class VistaCarritoEmpleado extends StatelessWidget {
                             ),
                             const SizedBox(width: 10),
                             Text(item.cantidad.toString(),
-                                style: const TextStyle(color: Colors.white)),
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .inverseSurface)),
                             const SizedBox(width: 5),
-                            const Text('x',
-                                style: TextStyle(color: Colors.white)),
+                            Text('x',
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .inverseSurface)),
                             const SizedBox(width: 10),
                             Expanded(
                               child: Text(item.producto.nombre,
-                                  style: const TextStyle(color: Colors.white)),
+                                  style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .inverseSurface)),
                             ),
                             Text(
                                 'S/. ${item.calcularPrecioTotal().toStringAsFixed(2)}',
-                                style: const TextStyle(color: Colors.white)),
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .inverseSurface)),
                             const SizedBox(width: 10),
                             IconButton(
                               icon: Icon(Icons.delete,
@@ -94,7 +106,10 @@ class VistaCarritoEmpleado extends StatelessWidget {
                           Text(
                             item.producto.tamanos![item.selectedTamanoIndex!]
                                 .nombre,
-                            style: const TextStyle(color: Colors.white70),
+                            style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .inverseSurface),
                           ),
                         if (item.selectedVarianteIndex != null &&
                             item.producto.variantes != null &&
@@ -104,7 +119,10 @@ class VistaCarritoEmpleado extends StatelessWidget {
                           Text(
                             item.producto
                                 .variantes![item.selectedVarianteIndex!].nombre,
-                            style: const TextStyle(color: Colors.white70),
+                            style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .inverseSurface),
                           ),
                         if (item.selectedAgregados != null &&
                             item.producto.agregados != null &&
@@ -114,7 +132,10 @@ class VistaCarritoEmpleado extends StatelessWidget {
                                 i < item.producto.agregados!.length) {
                               return Text(
                                 '${item.producto.agregados![i].nombre} (${item.selectedAgregados![i]})',
-                                style: const TextStyle(color: Colors.white70),
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .inverseSurface),
                               );
                             }
                             return const SizedBox.shrink();
@@ -128,12 +149,17 @@ class VistaCarritoEmpleado extends StatelessWidget {
                                 Expanded(
                                   child: TextFormField(
                                     initialValue: item.observaciones[i],
-                                    style: const TextStyle(color: Colors.white),
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .inverseSurface),
                                     decoration: InputDecoration(
                                       labelText:
                                           'Observación para el chef o mesero',
-                                      labelStyle: const TextStyle(
-                                          color: Colors.white70),
+                                      labelStyle: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .inverseSurface),
                                       enabledBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
                                           color: Theme.of(context)
@@ -178,13 +204,15 @@ class VistaCarritoEmpleado extends StatelessWidget {
                 },
               ),
             ),
-            const Divider(color: Colors.white),
+            Divider(color: Theme.of(context).colorScheme.inverseSurface),
             TextFormField(
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(
+                  color: Theme.of(context).colorScheme.inverseSurface),
               controller: dniController,
               decoration: InputDecoration(
                 labelText: 'DNI del Cliente',
-                labelStyle: const TextStyle(color: Colors.white70),
+                labelStyle: TextStyle(
+                    color: Theme.of(context).colorScheme.inverseSurface),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
                     color: Theme.of(context).colorScheme.primary,
@@ -202,18 +230,18 @@ class VistaCarritoEmpleado extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     'Total:',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.inverseSurface,
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
                     ),
                   ),
                   Text(
                     'S/. ${bloc.totalCarritoPrecio().toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.inverseSurface,
                       fontWeight: FontWeight.bold,
                       fontSize: 30,
                     ),
@@ -328,18 +356,18 @@ class VistaCarritoEmpleado extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Confirmación'),
-          content: const Text(
+          title: Text('Confirmación'),
+          content: Text(
               '¿Estás seguro de que deseas eliminar este producto del carrito?'),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancelar'),
+              child: Text('Cancelar'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text('Eliminar'),
+              child: Text('Eliminar'),
               onPressed: () {
                 bloc.eliminarItem(producto);
                 Navigator.of(context).pop();
@@ -358,27 +386,27 @@ class VistaCarritoEmpleado extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Theme.of(context).colorScheme.tertiary,
-          title: const Text(
+          title: Text(
             'Confirmación',
             style: TextStyle(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.inverseSurface,
             ),
           ),
           content: Text(
             '¿Estás seguro de que deseas eliminar este pedido de "${item.producto.nombre}"?',
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.inverseSurface,
             ),
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancelar'),
+              child: Text('Cancelar'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text('Eliminar'),
+              child: Text('Eliminar'),
               onPressed: () {
                 bloc.eliminarObservacion(item.producto, observationIndex);
                 Navigator.of(context).pop();

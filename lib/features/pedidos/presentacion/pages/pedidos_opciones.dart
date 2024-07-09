@@ -209,8 +209,10 @@ class _PedidoOptionsScreenState extends State<PedidoOptionsScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  const PedidoReservaPagina()),
+                            builder: (context) => PedidoReservaPagina(
+                              bloc: bloc,
+                            ),
+                          ),
                         );
                       } else {}
                     },
@@ -326,7 +328,7 @@ class _TituloProducto extends StatelessWidget {
                   item.producto.nombre,
                   style: TextStyle(
                       color: Theme.of(context).colorScheme.inverseSurface,
-                      fontSize: 22,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold),
                   softWrap: true,
                   maxLines: 2,
@@ -339,7 +341,7 @@ class _TituloProducto extends StatelessWidget {
                   "S/. ${total.toStringAsFixed(2)}",
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.primary,
-                    fontSize: 18,
+                    fontSize: 16,
                   ),
                 ),
               ],

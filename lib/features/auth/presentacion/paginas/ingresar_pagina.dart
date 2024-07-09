@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:restaurant_app/app/global/preferencias/pref_usuarios.dart';
 import 'package:restaurant_app/app/global/view/components/my_button.dart';
 import 'package:restaurant_app/app/global/view/components/my_textfield.dart';
 import 'package:restaurant_app/app/global/view/components/splash_pagina.dart';
@@ -58,7 +57,6 @@ class _EntrarState extends State<Entrar> {
           context,
           MaterialPageRoute(builder: (context) => const SeleccionarMenuApp()),
         );
-
       } else {
         // Redirigir a la página de inicio para usuarios normales
         Navigator.pushReplacement(
@@ -92,7 +90,7 @@ class _EntrarState extends State<Entrar> {
                 "Restaurant D' Gilberth",
                 style: TextStyle(
                   fontSize: 20,
-                  color: Theme.of(context).colorScheme.inversePrimary,
+                  color: Theme.of(context).colorScheme.inverseSurface,
                 ),
               ),
               const SizedBox(height: 25),
@@ -121,7 +119,7 @@ class _EntrarState extends State<Entrar> {
                       Text(
                         "¿No tienes una cuenta?",
                         style: TextStyle(
-                          color: Theme.of(context).colorScheme.inversePrimary,
+                          color: Theme.of(context).colorScheme.inverseSurface,
                         ),
                       ),
                       GestureDetector(
@@ -129,7 +127,7 @@ class _EntrarState extends State<Entrar> {
                         child: Text(
                           "Ingresar sin cuenta",
                           style: TextStyle(
-                            color: Theme.of(context).colorScheme.inversePrimary,
+                            color: Theme.of(context).colorScheme.inverseSurface,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -144,7 +142,7 @@ class _EntrarState extends State<Entrar> {
                         child: Text(
                           "Regístrate",
                           style: TextStyle(
-                            color: Theme.of(context).colorScheme.inversePrimary,
+                            color: Theme.of(context).colorScheme.inverseSurface,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

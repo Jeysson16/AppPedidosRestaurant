@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restaurant_app/app/global/preferencias/pref_usuarios.dart';
 import 'package:restaurant_app/app/global/view/components/cargando_pagina.dart';
 import 'package:restaurant_app/features/mesa/dominio/entidades/sucursal.dart';
 import 'package:restaurant_app/features/productos/presentacion/controller/sliver_controll_controller.dart';
@@ -56,6 +57,15 @@ class _VistaProductosState extends State<VistaProductos> {
     widget.bloc.scrollToCategory(categoryId);
   }
 
+  // Método para guardar pisoId y mesaId en PreferenciasUsuario
+  Future<void> _guardarSeleccion(
+      String sucursalId, String sucursalNombre) async {
+    PreferenciasUsuario.init();
+    PreferenciasUsuario prefs = PreferenciasUsuario();
+    prefs.sucursalId = sucursalId;
+    prefs.sucursalNombre = sucursalNombre;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Theme(
@@ -110,6 +120,15 @@ class _VistaProductosState extends State<VistaProductos> {
                                     onChanged: (String? newValue) {
                                       setState(() {
                                         sucursalSeleccionada = newValue;
+                                        sucursalSeleccionadaData = widget
+                                            .sucursales
+                                            .firstWhere((sucursal) =>
+                                                sucursal.id ==
+                                                sucursalSeleccionada);
+                                        _guardarSeleccion(
+                                            sucursalSeleccionada!,
+                                            sucursalSeleccionadaData!
+                                                .nombreSucursal);
                                         if (newValue != null) {
                                           sucursalSeleccionadaData = widget
                                               .sucursales

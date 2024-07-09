@@ -5,8 +5,9 @@ ThemeData modoClaro = ThemeData(
     surface: Colors.white, // Fondo principal claro
     primary: Colors.red.shade700, // Rojo dominante del logo
     secondary: Colors.black, // Negro del logo
-    tertiary: const Color.fromARGB(
-        255, 25, 25, 25), // Versión más clara del rojo para acentos
-    inversePrimary: Colors.grey.shade700, // Para contrastes oscuros
+    tertiary: Color.fromARGB(
+        255, 226, 222, 222), // Versión más clara del rojo para acentos
+    inversePrimary:
+        const Color.fromARGB(255, 219, 219, 219), // Para contrastes oscuros
   ),
 );
