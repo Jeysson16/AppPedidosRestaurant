@@ -110,7 +110,7 @@ class _SeleccionarMesaPageState extends State<SeleccionarMesaPage> {
 
   @override
   Widget build(BuildContext context) {
-    final menuBloc = MenuBlocProvider.of(context)!.instagramBloc;
+    final menuBloc = MenuBlocProvider.of(context)!.menuBloc;
 
     return Scaffold(
       body: _isLoading

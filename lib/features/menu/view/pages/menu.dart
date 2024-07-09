@@ -9,7 +9,7 @@ class SeleccionarMenuApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MenuBlocProvider(
-      instagramBloc: MenuBloc(),
+      menuBloc: MenuBloc(),
       child: const _SeleccionarMenuApp(),
     );
   }
@@ -20,7 +20,7 @@ class _SeleccionarMenuApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final seleccionarMenuBloc = MenuBlocProvider.of(context)!.instagramBloc;
+    final seleccionarMenuBloc = MenuBlocProvider.of(context)!.menuBloc;
     return AnimatedBuilder(
       animation: seleccionarMenuBloc,
       builder: (context, child) {
@@ -52,7 +52,7 @@ class _SeleccionarMenuApp extends StatelessWidget {
           home: child,
         );
       },
-      child: const InstagramNavigationScreen(),
+      child: const MenuNavigationScreen(),
     );
   }
 }

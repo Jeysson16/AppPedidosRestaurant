@@ -7,20 +7,19 @@ import 'package:restaurant_app/features/mesa/presentacion/pages/seleccionar_mesa
 import 'package:restaurant_app/features/pedidos/presentacion/pages/detalles_pedidos_pagina.dart';
 import 'package:restaurant_app/features/productos/presentacion/pages/registrar_productos.dart';
 
-class InstagramNavigationScreen extends StatefulWidget {
-  const InstagramNavigationScreen({super.key});
+class MenuNavigationScreen extends StatefulWidget {
+  const MenuNavigationScreen({super.key});
 
   @override
-  InstagramNavigationScreenState createState() =>
-      InstagramNavigationScreenState();
+  MenuNavigationScreenState createState() => MenuNavigationScreenState();
 }
 
-class InstagramNavigationScreenState extends State<InstagramNavigationScreen> {
+class MenuNavigationScreenState extends State<MenuNavigationScreen> {
   int index = 0;
 
   @override
   Widget build(BuildContext context) {
-    final instagramBloc = MenuBlocProvider.of(context)!.instagramBloc;
+    final instagramBloc = MenuBlocProvider.of(context)!.menuBloc;
     final topInset = MediaQuery.of(context).padding.top;
     final settingsHeight = MediaQuery.of(context).size.height * .25 + topInset;
 

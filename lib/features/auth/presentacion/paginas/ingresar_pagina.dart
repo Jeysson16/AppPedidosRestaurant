@@ -5,7 +5,7 @@ import 'package:restaurant_app/app/global/view/components/my_textfield.dart';
 import 'package:restaurant_app/app/global/view/components/splash_pagina.dart';
 import 'package:restaurant_app/features/auth/data/repositorios/firebase_usuarios_repositorio.dart';
 import 'package:restaurant_app/features/pedidos/presentacion/pages/inicio_pagina.dart';
-import 'package:restaurant_app/features/menu/pages/menu.dart';
+import 'package:restaurant_app/features/menu/view/pages/menu.dart';
 
 class Entrar extends StatefulWidget {
   final void Function()? onRegisterTap;

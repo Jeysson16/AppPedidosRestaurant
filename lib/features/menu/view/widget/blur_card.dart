@@ -14,7 +14,7 @@ class SettingsBlurCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final instagramBloc = MenuBlocProvider.of(context)!.instagramBloc;
+    final instagramBloc = MenuBlocProvider.of(context)!.menuBloc;
     PreferenciasUsuario.init();
     PreferenciasUsuario prefs = PreferenciasUsuario();
     return ClipRRect(

@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:restaurant_app/app/global/preferencias/pref_usuarios.dart';
 import 'package:restaurant_app/app/global/view/components/my_button_rounded.dart';
 import 'package:restaurant_app/features/auth/data/service/dni_service_repositorio.dart';
-import 'package:restaurant_app/features/menu/pages/menu.dart';
+import 'package:restaurant_app/features/menu/view/pages/menu.dart';
 import 'package:restaurant_app/features/pedidos/data/repositorios/pedido_repostorio.dart';
 import 'package:restaurant_app/features/pedidos/dominio/entidades/detalle.dart';
 import 'package:restaurant_app/features/pedidos/dominio/entidades/pedido.dart';

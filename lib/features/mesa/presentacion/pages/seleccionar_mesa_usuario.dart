@@ -10,10 +10,12 @@ class SeleccionarMesaPageUsuario extends StatefulWidget {
   const SeleccionarMesaPageUsuario({super.key});
 
   @override
-  _SeleccionarMesaPageUsuarioState createState() => _SeleccionarMesaPageUsuarioState();
+  _SeleccionarMesaPageUsuarioState createState() =>
+      _SeleccionarMesaPageUsuarioState();
 }
 
-class _SeleccionarMesaPageUsuarioState extends State<SeleccionarMesaPageUsuario> {
+class _SeleccionarMesaPageUsuarioState
+    extends State<SeleccionarMesaPageUsuario> {
   final MesaService _mesaService = MesaService();
   String? _selectedPiso;
   String? _selectedPisoDescripcion;
@@ -133,7 +135,6 @@ class _SeleccionarMesaPageUsuarioState extends State<SeleccionarMesaPageUsuario>
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: SingleChildScrollView(
@@ -152,6 +153,7 @@ class _SeleccionarMesaPageUsuarioState extends State<SeleccionarMesaPageUsuario>
                                     _selectedMesaIndex = null;
                                   });
                                 },
+                                
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 16, vertical: 8),
