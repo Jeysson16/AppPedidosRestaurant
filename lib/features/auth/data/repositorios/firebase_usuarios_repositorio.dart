@@ -177,14 +177,23 @@ class FirebaseAutenticacionRepositorio implements AuthRepository {
           .init(); // Inicializar preferencias antes de usarlas
       PreferenciasUsuario prefs = PreferenciasUsuario();
       prefs.usuarioDni = uid;
+      Map<String, dynamic> userData;
       // Crear un mapa con los datos del usuario
-      Map<String, dynamic> userData = {
-        'nombres': nombres,
-        'apellidos': apellidos,
-        'correo': email,
-        'dni': dni,
-      };
-
+      if (nombres != null && apellidos != null) {
+        userData = {
+          'nombres': nombres,
+          'apellidos': apellidos,
+          'correo': email,
+          'dni': dni,
+        };
+      } else {
+        userData = {
+          'nombres': '',
+          'apellidos': '',
+          'correo': email,
+          'dni': dni,
+        };
+      }
       // Guardar la información del usuario en Firestore
       await _firestore.collection('usuarios').doc(uid).set(userData);
     } catch (e) {

@@ -20,7 +20,8 @@ class RegistrarUsuarioCaso {
       String nombres = dniData.nombres;
       String apellidos =
           '${dniData.apellidoPaterno} ${dniData.apellidoMaterno}';
-
+      
+      
       // Registrar usuario con Firebase Auth
       await authRepository.registerWithEmailAndPassword(
           email, password, nombres, apellidos, dni);
