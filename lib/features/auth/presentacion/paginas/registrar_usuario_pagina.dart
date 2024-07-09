@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restaurant_app/app/global/preferencias/pref_usuarios.dart';
 import 'package:restaurant_app/app/global/view/components/my_button.dart';
 import 'package:restaurant_app/app/global/view/components/my_textfield.dart';
 import 'package:restaurant_app/app/global/view/components/splash_pagina.dart';
@@ -9,8 +10,7 @@ import 'package:restaurant_app/features/pedidos/presentacion/pages/inicio_pagina
 
 class RegistrarUsuarioPagina extends StatefulWidget {
   final void Function()? onTap;
-  const RegistrarUsuarioPagina({Key? key, required this.onTap})
-      : super(key: key);
+  const RegistrarUsuarioPagina({super.key, required this.onTap});
 
   @override
   _RegistrarUsuarioPaginaState createState() => _RegistrarUsuarioPaginaState();
@@ -22,31 +22,32 @@ class _RegistrarUsuarioPaginaState extends State<RegistrarUsuarioPagina> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
+
+  // Instancia de PreferenciasUsuario
+  final PreferenciasUsuario preferenciasUsuario = PreferenciasUsuario();
+
   late final registrarUsuarioCaso = RegistrarUsuarioCaso(
     dniService:
         DniService(), // Reemplaza con la implementación real de IDniService
     authRepository:
         FirebaseAutenticacionRepositorio(), // Reemplaza con la implementación real de IAuthRepository
   );
+
   void _onRegistrarse() async {
     // Obtener datos del formulario
     String dni = dniController.text.trim();
     String email = emailController.text.trim();
     String password = passwordController.text;
     String confirmPassword = confirmPasswordController.text;
-
-    // Validar los datos (puedes implementar validaciones aquí)
-
     // Mostrar splash screen
     showDialog(
       context: context,
       barrierDismissible:
           false, // Evita que se pueda cerrar tocando fuera del splash
       builder: (BuildContext context) {
-        return SplashScreen();
+        return const SplashScreen();
       },
     );
-
     try {
       // Llamar al caso de uso para registrar usuario
       await registrarUsuarioCaso.ejecutarRegistro(dni, email, password);
@@ -89,6 +90,7 @@ class _RegistrarUsuarioPaginaState extends State<RegistrarUsuarioPagina> {
                   fontSize: 20,
                   color: Theme.of(context).colorScheme.inversePrimary,
                 ),
+                textAlign: TextAlign.center,
               ),
 
               const SizedBox(height: 25),

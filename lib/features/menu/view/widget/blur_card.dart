@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:restaurant_app/app/global/preferencias/pref_usuarios.dart';
-import 'package:restaurant_app/features/menu/view/bloc/menu_bloc.dart';
 import 'package:restaurant_app/features/menu/view/bloc/menu_bloc_provider.dart';
 
 class SettingsBlurCard extends StatelessWidget {

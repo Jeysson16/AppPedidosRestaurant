@@ -69,12 +69,10 @@ class ItemsCarrusel extends StatelessWidget {
 
 class _ItemsTransforms extends StatelessWidget {
   const _ItemsTransforms(
-      {Key? key,
-      required this.item,
+      {required this.item,
       this.displacement = 0.0,
       this.scale = 1.0,
-      this.opacity = 1.0})
-      : super(key: key);
+      this.opacity = 1.0});
 
   final double displacement;
   final double scale;
@@ -123,14 +121,13 @@ class _ItemsTransforms extends StatelessWidget {
 
 class _ItemImagen extends StatelessWidget {
   const _ItemImagen({
-    Key? key,
     required this.item,
-  }) : super(key: key);
+  });
   final PedidoSeleccionadoItem item;
 
   @override
   Widget build(BuildContext context) {
-    final uuid = Uuid();
+    const uuid = Uuid();
     return Align(
       alignment: Alignment.topCenter,
       child: ClipRRect(

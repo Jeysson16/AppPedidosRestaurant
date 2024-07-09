@@ -4,32 +4,34 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:restaurant_app/app/global/preferencias/pref_usuarios.dart';
 import 'package:restaurant_app/features/mesa/dominio/entidades/sucursal.dart';
 import 'package:restaurant_app/features/pedidos/data/model/calle_sugerencias.dart';
+import 'package:restaurant_app/features/pedidos/data/repositorios/pedido_repostorio.dart';
+import 'package:restaurant_app/features/pedidos/dominio/entidades/detalle.dart';
+import 'package:restaurant_app/features/pedidos/dominio/entidades/pedido.dart';
 import 'package:restaurant_app/features/pedidos/presentacion/bloc/pedido/presentacion_pedidos_bloc.dart';
 import 'package:restaurant_app/features/pedidos/presentacion/bloc/ubicacion_bloc.dart';
 import 'package:restaurant_app/features/pedidos/presentacion/bloc/ubicacion_event.dart';
 import 'package:restaurant_app/features/pedidos/presentacion/bloc/ubicacion_state.dart';
 import 'package:restaurant_app/features/pedidos/presentacion/components/mi_ubicacion_marker.dart';
 import 'package:restaurant_app/features/pedidos/presentacion/pages/confirmacion_pedido.dart';
-
-const mapboxToken =
-    "pk.eyJ1IjoiamV5c3NvbjM2IiwiYSI6ImNseG92MXl3MTBiOTUya3B3cjV2NngyMWsifQ.x8I5goP1hAQwWME3obHsZg";
-
-LatLng _miUbicacion = const LatLng(-8.077511514344646, -78.9964878591555);
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MiUbicacion extends StatefulWidget {
   final PresentacionPedidosBloc bloc;
   const MiUbicacion({
-    super.key,
+    Key? key,
     required this.bloc,
-  });
+  }) : super(key: key);
 
   @override
   State<MiUbicacion> createState() => _MiUbicacionState();
 }
 
 class _MiUbicacionState extends State<MiUbicacion> {
+  LatLng _miUbicacion = const LatLng(-8.077511514344646, -78.9964878591555);
+
   late PresentacionPedidosBloc bloc;
   LatLng? _ubiSucursal;
   final LayerHitNotifier hitNotifier = ValueNotifier(null);
@@ -109,6 +111,11 @@ class _MiUbicacionState extends State<MiUbicacion> {
             setState(() {
               _ubiSucursal = latLng; // Actualiza el punto seleccionado
               _polyline = _buildPolylines(); // Actualiza el Polyline
+
+              PreferenciasUsuario
+                  .init(); // Inicializar preferencias antes de usarlas
+              PreferenciasUsuario prefs = PreferenciasUsuario();
+              prefs.sucursalId = sucursal.id;
             });
           },
           child: Image.asset(
@@ -120,8 +127,14 @@ class _MiUbicacionState extends State<MiUbicacion> {
     return markerList;
   }
 
+  void actualizarUbicacionEnTiempoReal(UbicacionTiempoRealLoaded state) {
+    _miUbicacion = LatLng(state.ubicacion.latitude, state.ubicacion.longitude);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final pedidoRepository = FirebasePedidoRepository();
+
     return Scaffold(
       body: Stack(
         children: [
@@ -196,13 +209,78 @@ class _MiUbicacionState extends State<MiUbicacion> {
                     ),
                   IconButton(
                     icon: const Icon(Icons.arrow_forward),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => FaceIDView(),
-                        ),
+                    onPressed: () async {
+                      final prefs = await SharedPreferences.getInstance();
+                      final idSucursal = prefs.getString('sucursalId') ?? '';
+                      final idUsuario = prefs.getString('usuarioDni');
+                      String descripcion =
+                          'Pedido creado para recibir por delivery';
+
+                      // Calcular detalles del pedido
+                      List<DetallePedido> detallesPedido =
+                          bloc.carrito.map((item) {
+                        final double descuento =
+                            (item.producto.promocion ?? 0) *
+                                item.cantidad.toDouble(); // Calcular descuento
+                        DetallePedido detalle = DetallePedido(
+                          cantidad: item.cantidad,
+                          producto: item.producto,
+                          observaciones: item.observaciones.join(', '),
+                          descripcion: item.obtenerDescripcion(),
+                          precioUnitario: item.producto.precio,
+                          estado: 'Sin Atención',
+                          descuento: descuento,
+                        );
+                        return detalle;
+                      }).toList();
+
+                      // Crear el pedido
+                      Pedido pedido = Pedido(
+                        descripcion: descripcion,
+                        precio: bloc.totalCarritoPrecio(),
+                        horaInicioServicio: DateTime.now(),
+                        esDelivery: true,
+                        sucursalId: idSucursal,
+                        latitud: _miUbicacion.latitude.toString(),
+                        longitud: _miUbicacion.longitude.toString(),
+                        detalles: detallesPedido,
                       );
+
+                      try {
+                        // Llamar al servicio para enviar el pedido
+                        await pedidoRepository.crearPedidoUsuario(
+                            pedido, idUsuario!);
+
+                        // Mostrar el mensaje de éxito
+                        // ignore: use_build_context_synchronously
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Pedido realizado con éxito'),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+
+                        // Limpiar el carrito de compras en el bloc
+                        bloc.carrito.clear();
+                        bloc.changeToNormal(); // Cambiar el estado a normal después de realizar el pedido
+
+                        Navigator.push(
+                          // ignore: use_build_context_synchronously
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const FaceIDView(),
+                          ),
+                        );
+                      } catch (e) {
+                        // Mostrar mensaje de error en caso de fallo en el pedido
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                                'Error al realizar el pedido. Inténtalo de nuevo.'),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      }
                     },
                   ),
                 ],
@@ -211,17 +289,18 @@ class _MiUbicacionState extends State<MiUbicacion> {
                 child: BlocBuilder<UbicacionBloc, UbicacionState>(
                   builder: (context, state) {
                     if (state is UbicacionLoading) {
-                      return const Center(child: CircularProgressIndicator());
+                      return const SizedBox.shrink();
                     } else if (state is SucursalesLoaded) {
                       final sucursales = state.sucursales;
                       _markers = buildMarkers(sucursales);
                       if (_selectedLocation != null) {
                         _miUbicacion = _selectedLocation!;
-
                         _mapController.move(_miUbicacion, 16.0);
                       }
                     } else if (state is UrlTemplateObtenido) {
                       _urlTemplate = state.urlTemplate;
+                    } else if (state is UbicacionTiempoRealLoaded) {
+                      actualizarUbicacionEnTiempoReal(state);
                     } else if (state is UbicacionError) {
                       return Center(child: Text(state.mensaje));
                     }
@@ -246,7 +325,8 @@ class _MiUbicacionState extends State<MiUbicacion> {
                         TileLayer(
                           urlTemplate: _urlTemplate,
                           additionalOptions: const {
-                            'accessToken': mapboxToken,
+                            'accessToken':
+                                "pk.eyJ1IjoiamV5c3NvbjM2IiwiYSI6ImNseG92MXl3MTBiOTUya3B3cjV2NngyMWsifQ.x8I5goP1hAQwWME3obHsZg",
                             'id': 'mapbox.streets',
                           },
                         ),

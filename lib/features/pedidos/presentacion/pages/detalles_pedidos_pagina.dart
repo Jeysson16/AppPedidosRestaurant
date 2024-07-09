@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:restaurant_app/features/pedidos/dominio/entidades/detalle.dart';
 import 'package:restaurant_app/features/pedidos/presentacion/components/detalle_card.dart';
-import 'package:restaurant_app/features/pedidos/presentacion/pages/confirmacion_pedido.dart';
 
 class DetallesSliderPage extends StatefulWidget {
   const DetallesSliderPage({

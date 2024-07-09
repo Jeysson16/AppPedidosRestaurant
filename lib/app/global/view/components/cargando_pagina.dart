@@ -24,7 +24,7 @@ class _CustomLoadingPageState extends State<CustomLoadingPage>
       duration: const Duration(seconds: 2),
     )..repeat();
 
-    _timer = Timer.periodic(Duration(milliseconds: 500), (timer) {
+    _timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
       if (_bubbles.length < 30) {
         setState(() {
           _bubbles.add(AnimatedBubble(random: _random));
@@ -53,7 +53,7 @@ class _CustomLoadingPageState extends State<CustomLoadingPage>
               children: [
                 AnimatedBuilder(
                   animation: _controller,
-                  child: Container(
+                  child: SizedBox(
                     width: 100,
                     height: 100,
                     child: Image.asset(height: 170, "assets/restaurant.png"),

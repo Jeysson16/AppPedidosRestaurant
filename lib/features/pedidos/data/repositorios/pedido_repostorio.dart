@@ -38,6 +38,44 @@ class FirebasePedidoRepository implements PedidoRepository {
     }
   }
 
+  Future<void> crearPedidoUsuario(Pedido pedido, String idUsuario) async {
+    try {
+      // Guardar el pedido en la colección principal 'pedidos'
+      DocumentReference pedidoRef =
+          await _firestore.collection(_collectionPath).add(pedido.toJson());
+
+      // Guardar los detalles del pedido en una subcolección 'detallesPedido'
+      await _guardarDetallesPedido(pedidoRef.id, pedido.detalles ?? []);
+
+      // Guardar el pedido en la colección 'usuarios'
+      await _firestore
+          .collection('usuarios')
+          .doc(idUsuario)
+          .collection('pedidos')
+          .doc(pedidoRef.id)
+          .set(pedido.toJson());
+
+      // Guardar los detalles del pedido en una subcolección 'detallesPedido' dentro de 'usuarios'
+      await _guardarDetallesPedidoUsuario(
+          idUsuario, pedidoRef.id, pedido.detalles ?? []);
+    } catch (e) {
+      throw ("Error al crear pedido. Detalles: $e");
+    }
+  }
+
+  Future<void> _guardarDetallesPedidoUsuario(
+      String idUsuario, String pedidoId, List<DetallePedido> detalles) async {
+    for (var detalle in detalles) {
+      await _firestore
+          .collection('usuarios')
+          .doc(idUsuario)
+          .collection('pedidos')
+          .doc(pedidoId)
+          .collection('detallesPedido')
+          .add(detalle.toJson());
+    }
+  }
+
   @override
   Future<void> crearPedido(Pedido pedido) async {
     try {
@@ -124,7 +162,7 @@ class FirebasePedidoRepository implements PedidoRepository {
           .where('sucursalId', isEqualTo: sucursalId)
           .snapshots()
           .map((querySnapshot) => querySnapshot.docs
-              .map((doc) => Pedido.fromJson(doc.data() as Map<String, dynamic>))
+              .map((doc) => Pedido.fromJson(doc.data()))
               .toList());
     } catch (e) {
       return Stream.value([]);

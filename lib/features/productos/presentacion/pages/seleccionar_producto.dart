@@ -1,6 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:restaurant_app/app/global/preferencias/pref_usuarios.dart';
 import 'package:restaurant_app/features/mesa/presentacion/pages/seleccionada_mesa.dart';
 
 class SeleccionarMesaDetallePage extends StatefulWidget {
@@ -50,7 +48,7 @@ class _SeleccionarMesaDetallePageState
               ],
             ),
           ),
-          ListadoProductos(),
+          const ListadoProductos(),
         ],
       ),
     );

@@ -134,9 +134,9 @@ class SuperheroCard extends StatelessWidget {
                     ),
                   )
                 else
-                  SizedBox.shrink(),
+                  const SizedBox.shrink(),
 
-                SizedBox(height: 25),
+                const SizedBox(height: 25),
               ],
             ),
           )

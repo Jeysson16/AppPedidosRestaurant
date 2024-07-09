@@ -4,7 +4,6 @@ import 'package:restaurant_app/app/global/preferencias/pref_usuarios.dart';
 import 'package:restaurant_app/app/global/view/components/my_button_rounded.dart';
 import 'package:restaurant_app/features/auth/data/service/dni_service_repositorio.dart';
 import 'package:restaurant_app/features/menu/pages/menu.dart';
-import 'package:restaurant_app/features/mesa/presentacion/pages/seleccionar_mesa.dart';
 import 'package:restaurant_app/features/pedidos/data/repositorios/pedido_repostorio.dart';
 import 'package:restaurant_app/features/pedidos/dominio/entidades/detalle.dart';
 import 'package:restaurant_app/features/pedidos/dominio/entidades/pedido.dart';
@@ -59,7 +58,7 @@ class VistaCarritoEmpleado extends StatelessWidget {
                               backgroundImage: item.producto.imagenPrincipal !=
                                       null
                                   ? NetworkImage(item.producto.imagenPrincipal!)
-                                  : AssetImage('assets/restaurant.png'),
+                                  : const AssetImage('assets/restaurant.png'),
                             ),
                             const SizedBox(width: 10),
                             Text(item.cantidad.toString(),
@@ -236,7 +235,7 @@ class VistaCarritoEmpleado extends StatelessWidget {
                   final dni = dniController.text.trim();
                   String descripcion = '';
                   // Obtener datos del DNI
-                  if (dni != null && dni.length == 8) {
+                  if (dni.length == 8) {
                     final dniData = await DniService().fetchDniData(dni);
                     // Construir la descripción del pedido
                     descripcion = 'Cliente con DNI $dni, ';

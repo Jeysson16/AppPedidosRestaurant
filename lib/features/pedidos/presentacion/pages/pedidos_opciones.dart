@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:restaurant_app/features/pedidos/presentacion/bloc/pedido/presentacion_pedidos_bloc.dart';
 import 'package:restaurant_app/features/pedidos/presentacion/components/mi_direccion.dart';
@@ -330,15 +328,18 @@ class _TituloProducto extends StatelessWidget {
                       color: Theme.of(context).colorScheme.inverseSurface,
                       fontSize: 22,
                       fontWeight: FontWeight.bold),
+                  softWrap: true,
                   maxLines: 2,
                   textAlign: TextAlign.center,
+                  overflow: TextOverflow
+                      .ellipsis, // Maneja el desbordamiento con puntos suspensivos
                 ),
                 const Spacer(),
                 Text(
                   "S/. ${total.toStringAsFixed(2)}",
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.primary,
-                    fontSize: 22,
+                    fontSize: 18,
                   ),
                 ),
               ],
@@ -354,7 +355,7 @@ class _TituloProducto extends StatelessWidget {
                 "Cantidad: ${item.cantidad}",
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.primary,
-                  fontSize: 16,
+                  fontSize: 14,
                 ),
               ),
             ),

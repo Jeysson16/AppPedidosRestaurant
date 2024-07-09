@@ -25,7 +25,7 @@ class _AnimatedMarkerState extends State<_AnimatedMarker> {
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(Duration(milliseconds: 500), (timer) {
+    _timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
       setState(() {
         _scaleUp = !_scaleUp;
       });
@@ -45,7 +45,7 @@ class _AnimatedMarkerState extends State<_AnimatedMarker> {
         children: [
           Center(
             child: AnimatedContainer(
-              duration: Duration(milliseconds: 500),
+              duration: const Duration(milliseconds: 500),
               height: _scaleUp ? 40 : 20,
               width: _scaleUp ? 40 : 20,
               decoration: BoxDecoration(

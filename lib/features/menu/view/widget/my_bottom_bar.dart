@@ -82,7 +82,7 @@ class InstagramNavigationScreenState extends State<InstagramNavigationScreen> {
         ),
       ),
       bottomNavigationBar: RoundedNavigationBar(
-        selectedColor: Theme.of(context).colorScheme.onBackground,
+        selectedColor: Theme.of(context).colorScheme.onSurface,
         onTap: (value) {
           setState(() {
             index = value;

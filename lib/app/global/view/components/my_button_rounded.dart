@@ -35,22 +35,23 @@ class MyButtonRounded extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8.0),
-              if(precio.isNotEmpty)
+              if (precio.isNotEmpty)
                 Container(
                   alignment: AlignmentDirectional.center,
                   transformAlignment: AlignmentDirectional.center,
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                      'S/. $precio',
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    'S/. $precio',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
             ],

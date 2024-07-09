@@ -1,6 +1,5 @@
 import 'package:restaurant_app/features/pedidos/dominio/entidades/detalle.dart';
 import 'package:restaurant_app/features/pedidos/dominio/entidades/empleado_referenciado.dart';
-import 'package:flutter/foundation.dart';
 
 class Pedido {
   final String? id;

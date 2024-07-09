@@ -248,7 +248,7 @@ class _ListadoProductosState extends State<ListadoProductos>
                                                                               Hero(
                                                                                 tag: 'list_${bloc.carrito[index].producto.id}_details_$index', // Make tag unique
                                                                                 child: CircleAvatar(
-                                                                                  backgroundImage: bloc.carrito[index].producto.imagenPrincipal != null ? NetworkImage(bloc.carrito[index].producto.imagenPrincipal!) : AssetImage('assets/restaurant.png'),
+                                                                                  backgroundImage: bloc.carrito[index].producto.imagenPrincipal != null ? NetworkImage(bloc.carrito[index].producto.imagenPrincipal!) : const AssetImage('assets/restaurant.png'),
                                                                                 ),
                                                                               ),
                                                                               Positioned(

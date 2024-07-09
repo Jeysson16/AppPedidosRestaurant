@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restaurant_app/app/global/preferencias/pref_usuarios.dart';
 import 'package:restaurant_app/app/global/view/components/my_button.dart';
 import 'package:restaurant_app/app/global/view/components/my_textfield.dart';
 import 'package:restaurant_app/app/global/view/components/splash_pagina.dart';
@@ -26,6 +27,7 @@ class _EntrarState extends State<Entrar> {
   final TextEditingController passwordController = TextEditingController();
   final FirebaseAutenticacionRepositorio authService =
       FirebaseAutenticacionRepositorio();
+
   bool cargando = false;
   void _onIniciarSesion() async {
     // Obtener datos del formulario
@@ -35,18 +37,13 @@ class _EntrarState extends State<Entrar> {
     // Mostrar splash screen
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => SplashScreen()),
+      MaterialPageRoute(builder: (context) => const SplashScreen()),
     );
 
     try {
       // Validar que los campos no estén vacíos
       if (email.isEmpty || password.isEmpty) {
         throw Exception('Por favor completa todos los campos.');
-      }
-
-      // Validar que los datos sean no nulos
-      if (email == null || password == null) {
-        throw Exception('El email y la contraseña no pueden estar vacíos.');
       }
 
       // Llamar a authService para iniciar sesión
@@ -61,6 +58,7 @@ class _EntrarState extends State<Entrar> {
           context,
           MaterialPageRoute(builder: (context) => const SeleccionarMenuApp()),
         );
+
       } else {
         // Redirigir a la página de inicio para usuarios normales
         Navigator.pushReplacement(

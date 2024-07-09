@@ -21,12 +21,8 @@ class UbicacionRepositorioImpl implements UbicacionRepositorio {
     return snapshot.docs.map((doc) {
       final data = doc.data() as Map<String, dynamic>;
 
-      final ubicacion = data['ubicacion'] as GeoPoint;
-      print(
-        '${ubicacion.latitude} y longitud: ${ubicacion.longitude}',
-      );
       return Sucursal(
-        id: data['id'],
+        id: doc.id,
         nombreSucursal: data['nombreSucursal'],
         cantidadPisos: data['cantidadPisos'],
         direccion: data['direccion'],
@@ -46,6 +42,8 @@ class UbicacionRepositorioImpl implements UbicacionRepositorio {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.checkPermission();
     }
+    print(
+        Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high));
     return await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
   }
@@ -53,7 +51,7 @@ class UbicacionRepositorioImpl implements UbicacionRepositorio {
   @override
   Future<Position> geocodificarDireccion(String direccion) async {
     final url =
-        'https://api.mapbox.com/search/geocode/v6/forward?q=$direccion&proximity=ip&access_token=$mapboxToken';
+        'https://api.mapbox.com/search/geocode/v6/forward?q=$direccion&proximity=ip&access_token=pk.eyJ1IjoiamV5c3NvbjM2IiwiYSI6ImNseG92MXl3MTBiOTUya3B3cjV2NngyMWsifQ.x8I5goP1hAQwWME3obHsZg';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
@@ -79,7 +77,7 @@ class UbicacionRepositorioImpl implements UbicacionRepositorio {
   @override
   Future<List<AddressSuggestion>> obtenerSugerencias(String query) async {
     final url =
-        'https://api.mapbox.com/search/geocode/v6/forward?q=$query&country=pe&language=es&autocomplete=true&access_token=$mapboxToken';
+        'https://api.mapbox.com/search/geocode/v6/forward?q=$query&country=pe&language=es&autocomplete=true&access_token=pk.eyJ1IjoiamV5c3NvbjM2IiwiYSI6ImNseG92MXl3MTBiOTUya3B3cjV2NngyMWsifQ.x8I5goP1hAQwWME3obHsZg';
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -95,7 +93,7 @@ class UbicacionRepositorioImpl implements UbicacionRepositorio {
   Future<Position> geocodificarCoordenadas(
       double latitude, double longitude) async {
     final url =
-        'https://api.mapbox.com/search/geocode/v6/reverse?longitude=$longitude&latitude=$latitude&access_token=$mapboxToken';
+        'https://api.mapbox.com/search/geocode/v6/reverse?longitude=$longitude&latitude=$latitude&access_token=pk.eyJ1IjoiamV5c3NvbjM2IiwiYSI6ImNseG92MXl3MTBiOTUya3B3cjV2NngyMWsifQ.x8I5goP1hAQwWME3obHsZg';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
@@ -162,7 +160,7 @@ class UbicacionRepositorioImpl implements UbicacionRepositorio {
 
   @override
   String obtenerUrlTemplate(String modoTema) {
-    return 'https://api.mapbox.com/styles/v1/mapbox/${modoTema == "oscuro" ? "dark-v10" : "light-v10"}/tiles/256/{z}/{x}/{y}@2x?access_token=$mapboxToken';
+    return 'https://api.mapbox.com/styles/v1/mapbox/${modoTema == "oscuro" ? "dark-v10" : "light-v10"}/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiamV5c3NvbjM2IiwiYSI6ImNseG92MXl3MTBiOTUya3B3cjV2NngyMWsifQ.x8I5goP1hAQwWME3obHsZg';
   }
 
   @override
@@ -170,10 +168,6 @@ class UbicacionRepositorioImpl implements UbicacionRepositorio {
     QuerySnapshot snapshot = await firestore.collection('sucursal').get();
     return snapshot.docs.map((doc) {
       final data = doc.data() as Map<String, dynamic>;
-      final ubicacion = data['ubicacion'] as GeoPoint;
-      print(
-        '${ubicacion.latitude} y longitud: ${ubicacion.longitude}',
-      );
       return Sucursal(
         id: data['id'],
         nombreSucursal: data['nombreSucursal'],
@@ -191,7 +185,7 @@ class UbicacionRepositorioImpl implements UbicacionRepositorio {
   @override
   Future<Position> buscarUbicacionManual(String direccion) async {
     final url =
-        'https://api.mapbox.com/geocoding/v5/mapbox.places/$direccion.json?access_token=$mapboxToken';
+        'https://api.mapbox.com/geocoding/v5/mapbox.places/$direccion.json?access_token=pk.eyJ1IjoiamV5c3NvbjM2IiwiYSI6ImNseG92MXl3MTBiOTUya3B3cjV2NngyMWsifQ.x8I5goP1hAQwWME3obHsZg';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {

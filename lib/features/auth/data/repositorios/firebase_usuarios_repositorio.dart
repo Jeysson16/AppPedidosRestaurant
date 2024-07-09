@@ -112,6 +112,10 @@ class FirebaseAutenticacionRepositorio implements AuthRepository {
           prefs.sucursalId = sucursalId; // Guardar el ID de sucursal
           return true; // Usuario es un empleado
         } else {
+          await PreferenciasUsuario
+              .init(); // Inicializar preferencias antes de usarlas
+          PreferenciasUsuario prefs = PreferenciasUsuario();
+          prefs.usuarioDni = uid;
           return false; // Usuario es un usuario normal
         }
       } else {
@@ -169,6 +173,10 @@ class FirebaseAutenticacionRepositorio implements AuthRepository {
       );
       String uid = userCredential.user!.uid;
 
+      await PreferenciasUsuario
+          .init(); // Inicializar preferencias antes de usarlas
+      PreferenciasUsuario prefs = PreferenciasUsuario();
+      prefs.usuarioDni = uid;
       // Crear un mapa con los datos del usuario
       Map<String, dynamic> userData = {
         'nombres': nombres,

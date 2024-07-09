@@ -34,6 +34,16 @@ class PreferenciasUsuario {
     }
   }
 
+  String? get sucursalUbicacion {
+    return _prefs.getString('sucursalUbicacion');
+  }
+
+  set sucursalUbicacion(String? value) {
+    if (value != null) {
+      _prefs.setString('sucursalUbicacion', value);
+    }
+  }
+
   String? get usuarioDni {
     return _prefs.getString('usuarioDni');
   }

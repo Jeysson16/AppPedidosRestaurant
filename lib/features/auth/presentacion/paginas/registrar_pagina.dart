@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_app/features/auth/data/repositorios/firebase_cargo.repositorio.dart';
 import 'package:restaurant_app/features/auth/data/repositorios/firebase_usuarios_repositorio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:restaurant_app/features/auth/dominio/entidades/cargo.dart';
-import 'package:restaurant_app/features/auth/presentacion/bloc/autenticacion_bloc.dart';
-import 'package:restaurant_app/features/auth/presentacion/bloc/autenticacion_event.dart';
 
 class RegistrarEmpleadoPagina extends StatefulWidget {
   static const routeName = '/registrar-empleado';
 
-  const RegistrarEmpleadoPagina({Key? key}) : super(key: key);
+  const RegistrarEmpleadoPagina({super.key});
 
   @override
   _RegistrarEmpleadoPaginaState createState() =>

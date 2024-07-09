@@ -1,4 +1,3 @@
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:restaurant_app/features/productos/data/models/seleccion.dart';
@@ -135,7 +134,7 @@ class _ProductosDetallesState extends State<ProductosDetalles> {
                     child: Hero(
                       tag:
                           'list_${widget.product.id}_details_${selecciones.length}',
-                      child: Container(
+                      child: SizedBox(
                         height: MediaQuery.of(context).size.height * 0.26,
                         child: PageView.builder(
                           itemCount: widget.product.galeria?.length ??
@@ -643,7 +642,7 @@ class _ProductosDetallesState extends State<ProductosDetalles> {
                                           .inverseSurface,
                                     ),
                                   ),
-                                  duration: Duration(seconds: 2),
+                                  duration: const Duration(seconds: 2),
                                 ),
                               );
                             }
