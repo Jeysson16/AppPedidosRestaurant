@@ -12,8 +12,9 @@ class IngresarORegistrar extends StatefulWidget {
 
 class _IngresarORegistrarState extends State<IngresarORegistrar> {
   // inicializacion mostrar pagina
-  bool mostrarIniciarSesion = true;
-  bool mostrarAnonimo = false;
+  // La vista de invitado permite revisar el catálogo aun sin credenciales.
+  bool mostrarIniciarSesion = false;
+  bool mostrarAnonimo = true;
 
   // cambio entre entrar o registrarse el usuario
   void togglePages() {
